@@ -318,7 +318,7 @@ function validate-EntraConnectServer
 
     out-logfile -string $functionEntraConnect
 
-    $functionPathReturn = $functionEntraConnect.installSource.replace("\SetupFiles\","\")
+    $functionPathReturn = $functionEntraConnect.installSource.replace("\Microsoft Azure Active Directory Connect\SetupFiles\","\")
     
     out-logfile -string "Exiting validate-EntraConnectServer"
 
