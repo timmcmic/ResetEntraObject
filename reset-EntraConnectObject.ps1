@@ -216,6 +216,38 @@ Function write-FunctionParameters
     Out-LogFile -string "********************************************************************************"
 }
 
+function validate-ActiveDirectoryInfo
+{
+    Param
+    (
+        [Parameter(Mandatory = $true)]
+        $objectGUID,
+        [Parameter(Mandatory = $true)]
+        $objectMAIL
+    )
+
+    out-logfile -string "Entering validate-ActiveDirectoryInfo"
+
+    if (($objectGUID -eq "") -and ($objectMAIL -eq ""))
+    {
+        out-logfile -string "To locate an object in Active Directory the objectGUID or objectMAIL attribute must be provided." -isError:$true
+    }
+    elseif (($objectGUID -ne "") -and ($objectMAIL -eq ""))
+    {
+        out-logfile -string "To locate an object in Active Directory specify either the objectGUID of objectMail attribute - not both." -isError:$true
+    }
+    elseif ($objectGUID -ne "")
+    {
+        out-logfile -string "Active directory object will be located by objectGUID."
+        out-logfile -string $objectGUID
+    }
+    elseif ($objectMail -ne "")
+    {
+        out-logfile -string "Active Directory object will be located by objectMAIL."
+        out-logfile -string $objectMAIL
+    }
+}
+
 #Create the log file.
 
 new-logfile -logFileName (Get-Date -Format FileDateTime) -logFolderPath $logFolderPath
@@ -230,4 +262,8 @@ out-logfile -string "***********************************************************
 
 out-logfile -string "Script paramters:"
 write-functionParameters -keyArray $MyInvocation.MyCommand.Parameters.Keys -parameterArray $PSBoundParameters -variableArray (Get-Variable -Scope Local -ErrorAction Ignore)
+
+#Validate the Active Directory Recipient Information
+
+validate-ActiveDirectoryInfo -objectGUID $objectGUID -objectMail $objectMAIL
 
