@@ -17,7 +17,7 @@
 
 <#PSScriptInfo
 
-.VERSION 1.5
+.VERSION 1.7
 
 .GUID f9cfe327-869f-410e-90e3-7286c94c31fd
 
@@ -257,6 +257,7 @@ function validate-ActiveDirectoryServerInfo
         [Parameter(Mandatory = $true)]
         $globalCatalogServer,
         [Parameter(Mandatory = $true)]
+        [AllowNull()]
         $activeDirectoryCredential
     )
 
