@@ -17,7 +17,7 @@
 
 <#PSScriptInfo
 
-.VERSION 1.1
+.VERSION 1.2
 
 .GUID f9cfe327-869f-410e-90e3-7286c94c31fd
 
@@ -116,5 +116,55 @@ Function new-LogFile
         } 
     }
 }
+Function Out-LogFile
+{
+    [cmdletbinding()]
 
-new-logfile -logFileName (get-random) -logFolderPath $logFolderPath
+    Param
+    (
+        [Parameter(Mandatory = $true)]
+        $String,
+        [Parameter(Mandatory = $false)]
+        [boolean]$isError=$FALSE,
+    )
+
+    # Get the current date
+
+    [string]$date = Get-Date -Format G
+
+    # Build output string
+    #In this case since I abuse the function to write data to screen and record it in log file
+    #If the input is not a string type do not time it just throw it to the log.
+
+    if ($string.gettype().name -eq "String")
+    {
+        [string]$logstring = ( "[" + $date + "] - " + $string)
+    }
+    else 
+    {
+        $logString = $String
+    }
+
+    # Write everything to our log file and the screen
+
+    $logstring | Out-File -FilePath $global:LogFile -Append
+
+    #Write to the screen the information passed to the log.
+
+    if ($string.gettype().name -eq "String")
+    {
+        Write-Host $logString
+    }
+    else 
+    {
+        write-host $logString | select-object -expandProperty *
+    }
+
+    #If the output to the log is terminating exception - throw the same string.
+}
+
+new-logfile -logFileName (Get-Date -Format FileDateTime) -logFolderPath $logFolderPath
+
+out-logfile -string "**********************************************************************************"
+out-logfile -string "Starting reset-EntraConnectObject"
+out-logfile -string "**********************************************************************************"
