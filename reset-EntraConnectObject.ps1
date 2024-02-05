@@ -58,9 +58,16 @@ Param
 (
     #Define paramters to locate object in Active Directory
     [Parameter(Mandatory = $false)]
-    [string]$objectGUID="",
+    [string]$ADObjectGUID="",
     [Parameter(Mandatory = $false)]
-    [string]$objectMAIL="",
+    [string]$ADObjectMAIL="",
+    [Parameter(Mandatory = $false)]
+    [string]$ADObjectDN="",
+    #Define parameteres to locate object in Entra Connector space.
+    [Parameter(Mandatory = $false)]
+    [string]$EntraDN="",
+    [Parameter(Mandatory = $false)]
+    [boolean]$CalculateEntraDN=$true,
     #Define parameters for Active Directory Connections.
     [Parameter(Mandatory = $false)]
     [string]$globalCatalogServer="",
@@ -70,6 +77,12 @@ Param
     [Parameter(Mandatory = $true)]
     [string]$logFolderPath=$NULL
 )
+
+#Define the script parameters.
+
+[string]$entraConnectInstallPath = ""
+[boolean]$useActiveDirectoryLookup = $FALSE
+
 
 Function new-LogFile
 {
@@ -195,8 +208,6 @@ Function write-FunctionParameters
 
     #Define script paramters
 
-    [string]$entraConnectInstallPath = ""
-
     Out-LogFile -string "********************************************************************************"
 
     $parameteroutput = @()
@@ -225,33 +236,41 @@ function validate-ActiveDirectoryInfo
     Param
     (
         [Parameter(Mandatory = $true)]
-        $objectGUID,
+        $ADObjectGUID,
         [Parameter(Mandatory = $true)]
-        $objectMAIL
+        $ADObjectMAIL,
+        [Parameter(Mandatory = $true)]
+        $ADObjectDN
     )
+
+    $functionUseActiveDirectory = $false
 
     out-logfile -string "Entering validate-ActiveDirectoryInfo"
 
-    if (($objectGUID -eq "") -and ($objectMAIL -eq ""))
+    if ($ADObjectDN -ne "")
     {
-        out-logfile -string "To locate an object in Active Directory the objectGUID or objectMAIL attribute must be provided." -isError:$true
+        out-logfile -string "The object distinguished name was specified - no AD lookups required."
+        out-logfile -string $ADObjectDN
+        out-logfile -string $functionUseActiveDirectory
     }
-    elseif (($objectGUID -ne "") -and ($objectMAIL -ne ""))
+    elseif ($ADObjectGUID -ne "")
     {
-        out-logfile -string "To locate an object in Active Directory specify either the objectGUID of objectMail attribute - not both." -isError:$true
+        out-logfile -string "Active directory object will be located by ADObjectGUID."
+        out-logfile -string $ADObjectGUID
+        $functionUseActiveDirectory = $TRUE
+        out-logfile -string $functionUseActiveDirectory
     }
-    elseif ($objectGUID -ne "")
+    elseif ($ADObjectMAIL -ne "")
     {
-        out-logfile -string "Active directory object will be located by objectGUID."
-        out-logfile -string $objectGUID
-    }
-    elseif ($objectMail -ne "")
-    {
-        out-logfile -string "Active Directory object will be located by objectMAIL."
-        out-logfile -string $objectMAIL
+        out-logfile -string "Active Directory object will be located by ADObjectMAIL."
+        out-logfile -string $ADObjectMAIL
+        $functionUseActiveDirectory = $true
+        out-logfile -string $functionUseActiveDirectory
     }
 
     out-logfile -string "Exiting validate-ActiveDirectoryInfo"
+
+    return $functionUseActiveDirectory
 }
 
 function validate-ActiveDirectoryServerInfo
@@ -341,19 +360,40 @@ out-logfile -string "***********************************************************
 out-logfile -string "Script paramters:"
 write-functionParameters -keyArray $MyInvocation.MyCommand.Parameters.Keys -parameterArray $PSBoundParameters -variableArray (Get-Variable -Scope Local -ErrorAction Ignore)
 
-#Validate the Active Directory Tools are installed
-
-validate-ActiveDirectoryTools
-
 #Validate the Active Directory Recipient Information
 
-validate-ActiveDirectoryInfo -objectGUID $objectGUID -objectMail $objectMAIL
+if (($ADObjectGUID -ne "") -or ($ADObjectMail -ne "" ) -or ($ADObjectDN -ne ""))
+{
+    out-logfile -string "An Active Directory identifer was specified.  Determine if AD Looksups are required."
+    $useActiveDirectoryLookup = validate-ActiveDirectoryInfo -ADObjectGUID $ADObjectGUID -ADObjectMAIL $ADObjectMAIL -ADObjectDN $ADObjectDN
+}
+else 
+{
+    out-logfile -string "No Active Directory identifier was specified.  Administrator may be purging only from azure connector space."
+}
 
-#Validate the Active Directory Server information.
+#The following is performed only if the distinguished name is not provided forcing active directory lookup.
 
-validate-ActiveDirectoryServerInfo -globalCatalogServer $globalCatalogServer -activeDirectoryCredential $activeDirectoryCredential
+if ($useActiveDirectoryLookup -eq $TRUE)
+{
+    out-logfile -string "Lookup attribute provided - requires Active Directory connectivity.
+    "
+    #Validate the Active Directory Tools are installed
+
+    validate-ActiveDirectoryTools
+
+    #Validate the Active Directory Server information.
+
+    validate-ActiveDirectoryServerInfo -globalCatalogServer $globalCatalogServer -activeDirectoryCredential $activeDirectoryCredential
+}
+else 
+{
+    out-logfile -string "Active Directory lookup not required."
+}
 
 #Validate that the script is being run on the AD Connect Server
+
+out-logfile -string "Determine the Entra Connect installation root path - required for further script importation."
 
 $entraConnectInstallPath=validate-EntraConnectServer
 
