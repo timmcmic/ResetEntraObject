@@ -17,7 +17,7 @@
 
 <#PSScriptInfo
 
-.VERSION 1.8
+.VERSION 1.9
 
 .GUID f9cfe327-869f-410e-90e3-7286c94c31fd
 
@@ -288,7 +288,7 @@ function validate-ActiveDirectoryTools
 {
     out-logfile -string "Entering validate-ActiveDirectoryTools"
 
-    $functionCommands = get-command -module "RDAT-ADDS"
+    $functionCommands = get-command -module "ActiveDirectory"
 
     if ($functionCommands.count -eq 0)
     {
