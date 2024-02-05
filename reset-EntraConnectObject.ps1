@@ -17,7 +17,7 @@
 
 <#PSScriptInfo
 
-.VERSION 1.2
+.VERSION 1.3
 
 .GUID f9cfe327-869f-410e-90e3-7286c94c31fd
 
@@ -179,9 +179,55 @@ Function Out-LogFile
     }
 }
 
+Function write-FunctionParameters
+{
+    [cmdletbinding()]
+
+    Param
+    (
+        [Parameter(Mandatory = $true)]
+        $keyArray,
+        [Parameter(Mandatory = $true)]
+        $parameterArray,
+        [Parameter(Mandatory = $true)]
+        $variableArray
+    )
+
+    Out-LogFile -string "********************************************************************************"
+
+    $parameteroutput = @()
+
+    foreach ($paramName in $keyArray)
+    {
+        $bound = $parameterArray.ContainsKey($paramName)
+
+        $parameterObject = New-Object PSObject -Property @{
+            ParameterName = $paramName
+            ParameterValue = if ($bound) { $parameterArray[$paramName] }
+                                else { ($variableArray | where {$_.name -eq $paramName } ).value }
+            Bound = $bound
+            }
+
+        $parameterOutput+=$parameterObject
+    }
+
+    out-logfile -string $parameterOutput
+
+    Out-LogFile -string "********************************************************************************"
+}
+
+#Create the log file.
+
 new-logfile -logFileName (Get-Date -Format FileDateTime) -logFolderPath $logFolderPath
+
+#Start logging
 
 out-logfile -string "*********************************************************************************"
 out-logfile -string "Start reset-EntraConnectObject"
 out-logfile -string "*********************************************************************************"
+
+#Capture paramters for review.
+
+out-logfile -string "Script paramters:"
+write-functionParameters -keyArray $MyInvocation.MyCommand.Parameters.Keys -parameterArray $PSBoundParameters -variableArray (Get-Variable -Scope Local -ErrorAction Ignore)
 
