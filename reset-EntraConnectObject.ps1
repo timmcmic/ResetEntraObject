@@ -17,7 +17,7 @@
 
 <#PSScriptInfo
 
-.VERSION 1.9
+.VERSION 1.10
 
 .GUID f9cfe327-869f-410e-90e3-7286c94c31fd
 
@@ -193,6 +193,10 @@ Function write-FunctionParameters
         $variableArray
     )
 
+    #Define script paramters
+
+    [string]$entraConnectInstallPath = ""
+
     Out-LogFile -string "********************************************************************************"
 
     $parameteroutput = @()
@@ -303,6 +307,25 @@ function validate-ActiveDirectoryTools
     out-logfile -string "Exiting validate-ActiveDirectoryTools"
 }
 
+function validate-EntraConnectServer
+{
+    out-logfile -string "Entering validate-EntraConnectServer"
+
+    $functionApplicationDisplayName = "Microsoft Azure AD Connect synchronization services"
+    $functionInstalledPrograms = Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*
+    
+    $functionEntraConnect = $functionInstalledPrograms | where {$_.displayName -eq $functionApplicationDisplayName}
+
+    out-logfile -string $functionEntraConnect
+
+    $functionPathReturn = $functionEntraConnect.installSource.replace("\SetupFiles\","\")
+    
+    out-logfile -string "Exiting validate-EntraConnectServer"
+
+    return $functionPathReturn
+}
+
+
 #Create the log file.
 
 new-logfile -logFileName (Get-Date -Format FileDateTime) -logFolderPath $logFolderPath
@@ -329,3 +352,9 @@ validate-ActiveDirectoryInfo -objectGUID $objectGUID -objectMail $objectMAIL
 #Validate the Active Directory Server information.
 
 validate-ActiveDirectoryServerInfo -globalCatalogServer $globalCatalogServer -activeDirectoryCredential $activeDirectoryCredential
+
+#Validate that the script is being run on the AD Connect Server
+
+$entraConnectInstallPath=validate-EntraConnectServer
+
+out-logfile -string $entraConnectInstallPath
