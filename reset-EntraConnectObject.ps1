@@ -278,10 +278,29 @@ function validate-ActiveDirectoryServerInfo
     }
     else 
     {
-        out-logfile -string $activeDirectoryCredential.UserName
+        out-logfile -string "Active Directory credential provided."
     }
 
     out-logfile -string "Exiting validate-ActiveDirectoryServerInfo"
+}
+
+function validate-ActiveDirectoryTools
+{
+    out-logfile -string "Entering validate-ActiveDirectoryTools"
+
+    $functionCommands = get-commands -module "RDAT-ADDS"
+
+    if ($functionCommands.count -eq 0)
+    {
+        out-logfile -string "Remote server administration tools for Active Directory required to proceed." -isError:$TRUE
+    }
+    else 
+    {
+        out-logfile -string "Remote server administration tools for Active Directory present."
+    }
+
+    
+    out-logfile -string "Exiting validate-ActiveDirectoryTools"
 }
 
 #Create the log file.
@@ -298,6 +317,10 @@ out-logfile -string "***********************************************************
 
 out-logfile -string "Script paramters:"
 write-functionParameters -keyArray $MyInvocation.MyCommand.Parameters.Keys -parameterArray $PSBoundParameters -variableArray (Get-Variable -Scope Local -ErrorAction Ignore)
+
+#Validate the Active Directory Tools are installed
+
+validate-ActiveDirectoryTools
 
 #Validate the Active Directory Recipient Information
 
