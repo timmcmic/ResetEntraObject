@@ -17,7 +17,7 @@
 
 <#PSScriptInfo
 
-.VERSION 1.3
+.VERSION 1.4
 
 .GUID f9cfe327-869f-410e-90e3-7286c94c31fd
 
@@ -232,7 +232,7 @@ function validate-ActiveDirectoryInfo
     {
         out-logfile -string "To locate an object in Active Directory the objectGUID or objectMAIL attribute must be provided." -isError:$true
     }
-    elseif (($objectGUID -ne "") -and ($objectMAIL -eq ""))
+    elseif (($objectGUID -ne "") -and ($objectMAIL -ne ""))
     {
         out-logfile -string "To locate an object in Active Directory specify either the objectGUID of objectMail attribute - not both." -isError:$true
     }
