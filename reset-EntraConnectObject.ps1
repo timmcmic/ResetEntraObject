@@ -17,7 +17,7 @@
 
 <#PSScriptInfo
 
-.VERSION 1.4
+.VERSION 1.5
 
 .GUID f9cfe327-869f-410e-90e3-7286c94c31fd
 
@@ -246,6 +246,41 @@ function validate-ActiveDirectoryInfo
         out-logfile -string "Active Directory object will be located by objectMAIL."
         out-logfile -string $objectMAIL
     }
+
+    out-logfile -string "Exiting validate-ActiveDirectoryInfo"
+}
+
+function validate-ActiveDirectoryServerInfo
+{
+    Param
+    (
+        [Parameter(Mandatory = $true)]
+        $globalCatalogServer,
+        [Parameter(Mandatory = $true)]
+        $activeDirectoryCredential
+    )
+
+    out-logfile -string "Entering validate-ActiveDirectoryServerInfo"
+
+    out-logfile -string "Validating global catalog server..."
+
+    if ($globalCatalogServer -eq "")
+    {
+        out-logfile -string "A global catlog server must be specified in order to continue." -isError:$true
+    }
+
+    out-logfile -string "Validaing credentials passed."
+
+    if ($activeDirectoryCredential -eq $NULL)
+    {
+        out-logfile -string "A validate Active Directory credential with rights to read objects must be provided." -isError:$TRUE
+    }
+    else 
+    {
+        out-logfile -string $activeDirectoryCredential.UserName
+    }
+
+    out-logfile -string "Exiting validate-ActiveDirectoryServerInfo"
 }
 
 #Create the log file.
@@ -267,3 +302,6 @@ write-functionParameters -keyArray $MyInvocation.MyCommand.Parameters.Keys -para
 
 validate-ActiveDirectoryInfo -objectGUID $objectGUID -objectMail $objectMAIL
 
+#Validate the Active Directory Server information.
+
+validate-ActiveDirectoryServerInfo -globalCatalogServer $globalCatalogServer -activeDirectoryCredential $activeDirectoryCredential
