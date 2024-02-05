@@ -72,47 +72,49 @@ Param
 )
 
 Function new-LogFile
+{
+    [cmdletbinding()]
+
+    Param
+    (
+        [Parameter(Mandatory = $true)]
+        [string]$logFileName,
+        [Parameter(Mandatory = $true)]
+        [string]$logFolderPath
+    )
+
+    #First entry in split array is the prefix of the group - use that for log file name.
+    #The SMTP address may contain letters that are not permitted in a file name - for example ?.
+    #Using regex and a pattern to replace invalid file name characters with a -
+
+    [string]$logFileSuffix=".log"
+    [string]$fileName=$logFileName+$logFileSuffix
+
+    # Get our log file path
+
+    $logFolderPath = $logFolderPath+"\"+$logFileName+"\"
+    
+    #Since $logFile is defined in the calling function - this sets the log file name for the entire script
+    
+    $global:LogFile = Join-path $logFolderPath $fileName
+
+    #Test the path to see if this exists if not create.
+
+    [boolean]$pathExists = Test-Path -Path $logFolderPath
+
+    if ($pathExists -eq $false)
     {
-        [cmdletbinding()]
-
-        Param
-        (
-            [Parameter(Mandatory = $true)]
-            [string]$logFileName,
-            [Parameter(Mandatory = $true)]
-            [string]$logFolderPath
-        )
-
-        #First entry in split array is the prefix of the group - use that for log file name.
-        #The SMTP address may contain letters that are not permitted in a file name - for example ?.
-        #Using regex and a pattern to replace invalid file name characters with a -
-
-        [string]$logFileSuffix=".log"
-        [string]$fileName=$logFileName+$logFileSuffix
-   
-        # Get our log file path
-
-        $logFolderPath = $logFolderPath+"\"+$logFileName+"\"
-        
-        #Since $logFile is defined in the calling function - this sets the log file name for the entire script
-        
-        $global:LogFile = Join-path $logFolderPath $fileName
-
-        #Test the path to see if this exists if not create.
-
-        [boolean]$pathExists = Test-Path -Path $logFolderPath
-
-        if ($pathExists -eq $false)
+        try 
         {
-            try 
-            {
-                #Path did not exist - Creating
+            #Path did not exist - Creating
 
-                New-Item -Path $logFolderPath -Type Directory
-            }
-            catch 
-            {
-                throw $_
-            } 
+            New-Item -Path $logFolderPath -Type Directory
         }
+        catch 
+        {
+            throw $_
+        } 
     }
+}
+
+new-logfile -logFileName (get-random) -logFolderPath $logFolderPath
