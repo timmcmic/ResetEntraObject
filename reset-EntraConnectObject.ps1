@@ -17,7 +17,7 @@
 
 <#PSScriptInfo
 
-.VERSION 1.0
+.VERSION 1.1
 
 .GUID f9cfe327-869f-410e-90e3-7286c94c31fd
 
@@ -60,7 +60,12 @@ Param
     [Parameter(Mandatory = $false)]
     [string]$objectGUID="",
     [Parameter(Mandatory = $false)]
-    [string]$objectMAIL=""
+    [string]$objectMAIL="",
+    #Define parameters for Active Directory Connections.
+    [Parameter(Mandatory = $false)]
+    [string]$globalCatalogServer="",
+    [Parameter(Mandatory = $false)]
+    [psCredential]$activeDirectoryCredential=$NULL
 )
 
 write-host "Test"
