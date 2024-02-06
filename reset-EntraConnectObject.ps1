@@ -94,9 +94,9 @@ $adConnectorType = "AD"
 $entraConnectorType = "Extensible2"
 $entraConnectorName = ""
 
-$adObjectXML = "adObject.xml"
-$adCSObject = "adCSObject.xml"
-$entraCSObject = "entraCSObject.xml"
+$adObjectXML = "adObject"
+$adCSObject = "adCSObject"
+$entraCSObject = "entraCSObject"
 
 
 Function new-LogFile
@@ -527,6 +527,55 @@ function get-Connector
     return $functionConnectorName
 }
 
+Function Out-XMLFile
+     {
+        [cmdletbinding()]
+
+        Param
+        (
+            [Parameter(Mandatory = $true)]
+            $itemToExport,
+            [Parameter(Mandatory = $true)]
+            [string]$itemNameToExport
+        )
+
+        Out-LogFile -string "********************************************************************************"
+        Out-LogFile -string "BEGIN OUT-XMLFILE"
+        Out-LogFile -string "********************************************************************************"
+
+        #Declare function variables.
+
+        $fileName = $itemNameToExport+".xml"
+
+        #Update the log folder path to include the static folder.
+
+        $logFolderPath = $logFolderPath+$logFileName+"\"
+        
+        # Get our log file path and combine it with the filename
+
+        $LogFile = Join-path $logFolderPath $fileName
+
+        #Write our variables to the log.
+
+        out-logfile -string ("XML File Name = "+$fileName)
+        out-logfile -string ("Log Folder Path = "+$logFolderPath)
+        out-logfile -string ("Log File = "+$LogFile)
+
+        # Write everything to our log file and the screen
+
+        try 
+        {
+            $itemToExport | export-CLIXML -path $LogFile
+        }
+        catch 
+        {
+            throw $_
+        }
+
+        Out-LogFile -string "END OUT-XMLFILE"
+        Out-LogFile -string "********************************************************************************"
+    }
+
 #Create the log file.
 
 new-logfile -logFileName (Get-Date -Format FileDateTime) -logFolderPath $logFolderPath
@@ -605,7 +654,7 @@ if ($useActiveDirectoryLookup -eq $TRUE)
 
     out-logfile -string $adObject
 
-    $adobject | Export-Clixml -path $logFolderPath+"\"+$adObjectXML
+    Out-XMLFile -itemToExport $adobject -itemNameToExport $adObjectXML
 }
 
 #At this point we have determined if an AD Object is involved.  If it is not look to see if entraDN information requires calculation.
