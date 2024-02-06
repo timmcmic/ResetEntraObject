@@ -592,13 +592,10 @@ function get-CSObject
     )
     out-logfile -string "Enter get-CSObject"
 
-    out-logfile -string $dn
-    out-logfile -string $connectorName
-
     $functionCSObject=$NULL
 
     try {
-        $functionCSObject = Get-ADSyncCSObject -DistinguishedName $dn -ConnectorName $connectorName.substring(1)
+        $functionCSObject = Get-ADSyncCSObject -DistinguishedName $dn -ConnectorName $connectorName.trim
     }
     catch {
         out-logfile -string "Uanble to locate CS Object by DN."
@@ -753,4 +750,8 @@ if ($EntraDN -ne "")
     out-logfile -string $entraConnectorName.getType()
 
     $entraCSObject = get-CSObject -dn $EntraDN -connectorName $entraConnectorName
+
+    out-logfile -string $entraCSObject
+
+    out-xmlFile -itemToExport $entraCSObject -itemNameToExport $entraCSObjectXML
 }
