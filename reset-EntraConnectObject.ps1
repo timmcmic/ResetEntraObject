@@ -653,7 +653,7 @@ elseif (($ADObjectDN -ne "") -or ($ADObjectGUID -ne "") -or ($ADObjectMail -ne "
     {
         out-logfile -string "Entra DN provided with AD Information - calculate EntraDN not necessary."
         $CalculateEntraDN=$false
-        
+
         if ($adObjectDN -ne "")
         {
             out-logfile -string "AD Object DN specified - AD looksups no required."
@@ -695,9 +695,6 @@ elseif (($ADObjectDN -eq "") -or ($ADObjectGUID -eq "") -or ($ADObjectMail -eq "
         out-logfile -string "No AD or EntraDN information provided - no work to do." -isError:$true
     }
 }
-
-
-exit
 
 #Determine the AD Connect installation path.
 
