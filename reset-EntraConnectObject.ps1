@@ -428,6 +428,20 @@ function calculate-EntraDN
         $sourceAnchorAttribute
     )
 
+    $anchor0 = "objectGUID"
+    $anchor1 = "ms-ds-ConsistencyGuid"
+
+    if (($sourceAnchorAttribute -eq $anchor0) -or ($sourceAnchorAttribute -eq $anchor1))
+    {
+        out-logfile -string "Source anchor is objectGUID of ms-ds-ConsistencyGUID"
+        out-logfile -string "Determine if object has ms-ds-ConsistencyGUID"
+
+        if ($adObject.'ms-ds-ConsistencyGUID' -ne "")
+        {
+            out-logfile -string "MS-DS-ConsistencyGUID in use."
+        }
+    }
+
     return ""
 }
 
@@ -516,14 +530,10 @@ if (($CalculateEntraDN -eq $FALSE) -and ($entraDN -eq ""))
 {
     out-logfile -string "Calculate EntraDN is false and no entraDN provided - exit." -isError:$true
 }
-elseif (($calculateEntraDN -eq $TRUE) -and ($entraDN -ne ""))
-{
-    out-logfile -string "Calcualting EntraDN is enabled but EntraDN from connector space provided - invalid request." -isError:$TRUE
-}
 
 #At this time we can calculate the entraDN if necessary.
 
-if (($CalculateEntraDN -eq $TRUE))
+if (($CalculateEntraDN -eq $TRUE) -and ($entraDN -eq ""))
 {
     out-logfile -string "Determine the source anchor."
 
