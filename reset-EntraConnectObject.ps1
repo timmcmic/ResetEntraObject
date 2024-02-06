@@ -465,7 +465,7 @@ function calculate-EntraDN
     else 
     {
         out-logfile -string "Source anchor attribute is a custom attribute."
-        $functionBase64String = $adObject.`$sourceAnchorAttribute
+        $functionBase64String = $adObject.$sourceAnchorAttribute
 
         out-logfile -string $functionBase64String
     }
