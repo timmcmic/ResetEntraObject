@@ -429,6 +429,8 @@ function calculate-EntraDN
     $anchor0 = "objectGUID"
     $anchor1 = "ms-ds-ConsistencyGuid"
     $functionGUID = $NULL
+    $functionBase64String=$NULL
+    $functionDN = $NULL
 
     if (($sourceAnchorAttribute -eq $anchor0) -or ($sourceAnchorAttribute -eq $anchor1))
     {
@@ -438,10 +440,19 @@ function calculate-EntraDN
         if ($adObject.'ms-ds-ConsistencyGUID' -ne "")
         {
             out-logfile -string "MS-DS-ConsistencyGUID in use."
+            out-logfile -string $adObject.'ms-ds-consistencyguid'
 
             $functionGuid = [GUID]$adObject.'ms-ds-ConsistencyGUID'
 
             out-logfile -string $functionGUID.Guid
+
+            $functionBase64String = [System.Convert]::ToBase64String($functionGuid.ToByteArray())
+
+            out-logfile -string $functionBase64String
+
+            $functionDN = ConvertTo-ADSyncAadDistinguishedName -sourceAnchor $functionBase64String
+
+            out-logfile -string $functionDN
         }
     }
 
