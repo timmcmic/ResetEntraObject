@@ -97,6 +97,8 @@ $entraConnectorType = "Extensible2"
 $adObjectXML = "adObject"
 $adCSObjectXML = "adCSObject"
 $entraCSObjectXML = "entraCSObject"
+$singleItemData = $NULL
+$singleItemXML = "singleItemXML"
 
 $logFileName = (Get-Date -Format FileDateTime)
 
@@ -738,7 +740,8 @@ Function start-EntraSync
     elseif ($policyType -eq $single)
     {
         try {
-            Invoke-ADSyncSingleObjectSync -DistinguishedName $DN -errorAction STOP
+            out-logfile -string "Attempting single item sync."
+            $output = Invoke-ADSyncSingleObjectSync -DistinguishedName $DN -errorAction STOP
         }
         catch {
             out-logfile -string "Uanble to perform single object sync."
@@ -747,6 +750,11 @@ Function start-EntraSync
     }
 
     out-logfile -string "End start-EntraSync"
+
+    if ($output -ne $NULL)
+    {
+        return $output
+    }
 }
 
 #Create the log file.
