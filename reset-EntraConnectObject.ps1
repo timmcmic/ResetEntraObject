@@ -437,7 +437,7 @@ function calculate-EntraDN
         out-logfile -string "Source anchor is objectGUID of ms-ds-ConsistencyGUID"
         out-logfile -string "Determine if object has ms-ds-ConsistencyGUID"
 
-        if ($adObject.'ms-ds-ConsistencyGUID' -ne "")
+        if ($adObject.'ms-ds-ConsistencyGUID' -ne $NJLL)
         {
             out-logfile -string "MS-DS-ConsistencyGUID in use."
 
