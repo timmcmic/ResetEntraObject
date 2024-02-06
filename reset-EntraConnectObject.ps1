@@ -957,3 +957,7 @@ if ($entraCSObject -ne $NULL)
 
 out-logfile -string "If the object was an entra connetor space only move detal sync required - otherwise single object is fine."
 
+if (($adCSObject -eq $NULL) -and ($entraCSObject -ne $NULL))
+{
+    start-EntraSync -policyType "Delta"
+}
