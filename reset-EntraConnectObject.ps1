@@ -465,6 +465,8 @@ function calculate-EntraDN
     else 
     {
         $functionBase64String = $adObject.'$sourceAnchorAttribute'
+
+        out-logfile -string $functionBase64String
     }
 
     return ""
