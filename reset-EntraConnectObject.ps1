@@ -432,8 +432,8 @@ function calculate-EntraDN
     $anchor1 = "ms-ds-ConsistencyGuid"
     $functionGUID = $NULL
     
-    out-logfile -string $adobject.'ms-ds-ConsistencyGUID'
-    out-logfile -string $adobject.distinguished
+    out-logfile -string $adobject.'ms-ds-consistencyguid'
+    out-logfile -string $adobject.distinguishedName
     out-logfile -string $adObject.mail
     out-logfile -string $adobject.objectGUID
 
