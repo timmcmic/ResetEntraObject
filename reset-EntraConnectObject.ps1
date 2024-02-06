@@ -592,7 +592,9 @@ function get-CSObject
     )
     out-logfile -string "Enter get-CSObject"
 
-    $functionCSObject
+    out-logfile -string $dn
+
+    $functionCSObject=$NULL
 
     try {
         $functionCSObject = Get-ADSyncCSObject -DistinguishedName $dn -ConnectorName $connectorName.trim()
