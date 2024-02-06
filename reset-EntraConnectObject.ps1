@@ -635,6 +635,12 @@ if (($entraDN -ne "") -and ($ADObjectDN -ne ""))
     out-logfile -string ("Calculate EntraDN: "+$CalculateEntraDN)
     out-logfile -string ("Use Active Directory Lookup: "+$useActiveDirectoryLookup)
 }
+elseif ($entraDN -ne "")
+{
+    out-logfile -string "EntraDN specified - disable calcualtion."
+    $CalculateEntraDN=$false
+    out-logfile -string ("CalcluateEntraDN: "+$CalculateEntraDN)
+}
 elseif (($entraDN -eq "") -and ($CalculateEntraDN -eq $TRUE))
 {
     if (($ADObjectDN -eq "") -and ($ADObjectMail -eq "") -and ($ADObjectGUID -eq ""))
