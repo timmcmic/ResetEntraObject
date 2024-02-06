@@ -509,7 +509,7 @@ function get-Connector
     
     out-logfile -string $functionConnectors
 
-    if ($functionConnectors.count -gt 0)
+    if ($functionConnectors.count -gt 1)
     {
         out-logfile -string "More than one Active Directory connector exists.  Please specify -ADConnectorName with the name from Synchornization Manager -> Connectors"
     }
