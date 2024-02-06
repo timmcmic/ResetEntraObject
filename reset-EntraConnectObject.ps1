@@ -993,3 +993,8 @@ else
         $singleItemData = start-EntraSync -policyType "Single" -dn $ADObjectDN
     }
 }
+
+if ($singleItemData -ne $NULL)
+{
+    Out-XMLFile -itemToExport $singleItemData -itemNameToExport $singleItemXML
+}
