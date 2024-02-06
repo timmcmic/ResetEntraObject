@@ -87,6 +87,7 @@ Param
 [string]$ADSyncDiagnosticsPowershell = "Microsoft Azure AD Sync\Bin\ADSyncDiagnostics\ADSyncDiagnostics.psm1"
 [string]$ADConnectorPowershellFullpath = ""
 [string]$ADSyncDiagnosticsPowershellFullPath = ""
+$adObject = $NULL
 
 
 Function new-LogFile
@@ -232,48 +233,6 @@ Function write-FunctionParameters
     Out-LogFile -string "********************************************************************************"
 }
 
-function validate-ActiveDirectoryInfo
-{
-    Param
-    (
-        [Parameter(Mandatory = $true)]
-        $ADObjectGUID,
-        [Parameter(Mandatory = $true)]
-        $ADObjectMAIL,
-        [Parameter(Mandatory = $true)]
-        $ADObjectDN
-    )
-
-    $functionUseActiveDirectory = $false
-
-    out-logfile -string "Entering validate-ActiveDirectoryInfo"
-
-    if ($ADObjectDN -ne "")
-    {
-        out-logfile -string "The object distinguished name was specified - no AD lookups required."
-        out-logfile -string $ADObjectDN
-        out-logfile -string $functionUseActiveDirectory
-    }
-    elseif ($ADObjectGUID -ne "")
-    {
-        out-logfile -string "Active directory object will be located by ADObjectGUID."
-        out-logfile -string $ADObjectGUID
-        $functionUseActiveDirectory = $TRUE
-        out-logfile -string $functionUseActiveDirectory
-    }
-    elseif ($ADObjectMAIL -ne "")
-    {
-        out-logfile -string "Active Directory object will be located by ADObjectMAIL."
-        out-logfile -string $ADObjectMAIL
-        $functionUseActiveDirectory = $true
-        out-logfile -string $functionUseActiveDirectory
-    }
-
-    out-logfile -string "Exiting validate-ActiveDirectoryInfo"
-
-    return $functionUseActiveDirectory
-}
-
 function validate-ActiveDirectoryServerInfo
 {
     Param
@@ -387,6 +346,69 @@ function import-PowershellCommands
     out-logfile -string "Exiting import-PowershellCommands"
 }
 
+function collect-ADObject
+{
+    Param
+    (
+        [Parameter(Mandatory = $true)]
+        $ADObjectDN,
+        [Parameter(Mandatory = $true)]
+        $ADObjectGUID,
+        [Parameter(Mandatory = $true)]
+        $ADObjectMAIL,
+        [Parameter(Mandatory = $true)]
+        $globalCatalogServer,
+        [Parameter(Mandatory = $true)]
+        $activeDirectoryCredential
+    )
+
+    [string]$globalCatalogPort=":3268"
+    [string]$globalCatalogWithPort=$globalCatalogServer+$globalCatalogPort
+    $functionADObject = $NULL
+
+    out-logfile -string "Entering collect-ADObject"
+
+    if ($ADObjectDN -ne "")
+    {
+        try
+        {
+            $functionADObject=get-adobject -identity $ADObjectDN -Server $globalCatalogWithPort -credential $activeDirectoryCredential -Properties * -errorAction STOP
+        }
+        catch {
+            out-logfile -string "ADObjectDN specified but object not found by DN."
+            out-logfile -string $_ -isError:$TRUE
+        }
+    }
+    elseif ($ADObjectGUID -ne "")
+    {
+        try
+        {
+            $functionADObject=get-adobject -filter "objectGuid -eq '$ADObjectGUID'" -Server $globalCatalogWithPort -credential $activeDirectoryCredential -Properties * -errorAction STOP
+        }
+        catch {
+            out-logfile -string "ADObjectDN specified but object not found by DN."
+            out-logfile -string $_ -isError:$TRUE
+        }
+    }
+    elseif ($ADObjectMail -ne "")
+    {
+        try
+        {
+            $functionADObject=get-adobject -filter "mail -eq '$ADObjectMAIL'" -Server $globalCatalogWithPort -credential $activeDirectoryCredential -Properties * -errorAction STOP
+        }
+        catch {
+            out-logfile -string "ADObjectDN specified but object not found by DN."
+            out-logfile -string $_ -isError:$TRUE
+        }
+    }
+
+    out-logfile -string $functionADObject
+
+    out-logfile -string "Exiting collect-ADObject"
+
+    return $functionADObject
+}
+
 #Create the log file.
 
 new-logfile -logFileName (Get-Date -Format FileDateTime) -logFolderPath $logFolderPath
@@ -426,8 +448,8 @@ import-PowershellCommands -powerShellModule $ADSyncDiagnosticsPowershellFullPath
 
 if (($ADObjectGUID -ne "") -or ($ADObjectMail -ne "" ) -or ($ADObjectDN -ne ""))
 {
-    out-logfile -string "An Active Directory identifer was specified.  Determine if AD Looksups are required."
-    $useActiveDirectoryLookup = validate-ActiveDirectoryInfo -ADObjectGUID $ADObjectGUID -ADObjectMAIL $ADObjectMAIL -ADObjectDN $ADObjectDN
+    out-logfile -string "An Active Directory identifer was specified."
+    $useActiveDirectoryLookup = $true
 }
 else 
 {
@@ -435,6 +457,8 @@ else
 }
 
 #The following is performed only if the distinguished name is not provided forcing active directory lookup.
+
+#If use active directory is true perform pre-req checks.
 
 if ($useActiveDirectoryLookup -eq $TRUE)
 {
@@ -447,16 +471,10 @@ if ($useActiveDirectoryLookup -eq $TRUE)
     #Validate the Active Directory Server information.
 
     validate-ActiveDirectoryServerInfo -globalCatalogServer $globalCatalogServer -activeDirectoryCredential $activeDirectoryCredential
+
+    #Obtain the active directory object for futher work.
+
+    $adObject = collect-ADObject -ADObjectDN $ADObjectDN -adobjectguid $adobjectGUID -adObjectMail $ADObjectMAIL -globalCatalogServer $globalCatalogServer -activeDirectoryCredential $activeDirectoryCredential
+
+    out-logfile -string $adObject
 }
-else 
-{
-    out-logfile -string "Active Directory lookup not required."
-}
-
-#Validate that the script is being run on the AD Connect Server
-
-out-logfile -string "Determine the source anchor utilized in the installation."
-
-$sourceAnchorAttribute = query-SourceAnchor
-
-out-logfile -string $sourceAnchorAttribute
