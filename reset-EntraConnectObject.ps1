@@ -103,6 +103,10 @@ Function new-LogFile
 
     [string]$logFileSuffix=".log"
     [string]$fileName=$logFileName+$logFileSuffix
+    [string]$ADConnectorPowershell = "Microsoft Azure AD Sync\Extensions\AADConnector.psm1"
+    [string]$ADSyncDiagnosticsPowershell = "Microsoft Azure AD Sync\Bin\ADSyncDiagnostics\ADSyncDiagnostics.psm1"
+    [string]$ADConnectorPowershellFullpath = ""
+    [string]$ADSyncDiagnosticsPowershellFullPath = ""
 
     # Get our log file path
 
@@ -366,6 +370,26 @@ function query-SourceAnchor
     return $functionSourceAnchorValue
 }
 
+function import-PowershellCommands
+{
+    Param
+    (
+        [Parameter(Mandatory = $true)]
+        $powerShellModule
+    )
+    out-logfile -string "Entering import-PowershellCommands"
+
+    try {
+        Import-Module $powerShellModule -errorAction STOP
+        out-logfile -string "Powershell module imported successfully."
+    }
+    catch {
+        out-logfile -string "Error importing powershell module necessary for script execution."
+        out-logfile -string $_ -isError:$TRUE
+    }
+
+    out-logfile -string "Exiting import-PowershellCommands"
+}
 
 #Create the log file.
 
@@ -381,6 +405,26 @@ out-logfile -string "***********************************************************
 
 out-logfile -string "Script paramters:"
 write-functionParameters -keyArray $MyInvocation.MyCommand.Parameters.Keys -parameterArray $PSBoundParameters -variableArray (Get-Variable -Scope Local -ErrorAction Ignore)
+
+#Determine the AD Connect installation path.
+
+out-logfile -string "Determine the Entra Connect installation root path - required for further script importation."
+
+$entraConnectInstallPath=validate-EntraConnectServer
+
+out-logfile -string $entraConnectInstallPath
+
+out-logfile -string "Construct powershell modules to import path."
+
+$ADConnectorPowershellFullpath = $entraConnectInstallPath+$ADConnectorPowershell
+out-logfile -string $ADConnectorPowershellFullpath
+$ADSyncDiagnosticsPowershellFullPath = $entraConnectInstallPath+$ADSyncDiagnosticsPowershell
+out-logfile -string $ADSyncDiagnosticsPowershellFullPath
+
+out-logfile -string "Importing powershell commands necessary for script execution."
+
+import-PowershellCommands -powerShellModule $ADConnectorPowershellFullpath
+import-PowershellCommands -powerShellModule $ADSyncDiagnosticsPowershellFullPath
 
 #Validate the Active Directory Recipient Information
 
@@ -414,12 +458,6 @@ else
 }
 
 #Validate that the script is being run on the AD Connect Server
-
-out-logfile -string "Determine the Entra Connect installation root path - required for further script importation."
-
-$entraConnectInstallPath=validate-EntraConnectServer
-
-out-logfile -string $entraConnectInstallPath
 
 out-logfile -string "Determine the source anchor utilized in the installation."
 
