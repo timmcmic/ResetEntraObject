@@ -785,7 +785,7 @@ if ($adobject -ne $NULL)
 
     out-xmlFile -itemToExport $adCSObject -itemNameToExport $adCSObjectXML
 }
-else 
+elseif ($adObjectDN -ne "") 
 {
     out-logfile -string "An active directory object DN was specified."
 
@@ -794,6 +794,10 @@ else
     Out-LogFile -string $adCSObject
 
     out-xmlFile -itemToExport $adCSObject -itemNameToExport $adCSObjectXML
+}
+else 
+{
+    out-logfile -string "No Active Directory CS object information obtained."
 }
 
 if ($EntraDN -ne "")
