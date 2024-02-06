@@ -92,7 +92,7 @@ Param
 $adObject = $NULL
 $adConnectorType = "AD"
 $entraConnectorType = "Extensible2"
-$entraConnectorName = ""
+[string[$entraConnectorName = ""
 
 $adObjectXML = "adObject"
 $adCSObjectXML = "adCSObject"
@@ -749,6 +749,8 @@ if ($adobject -ne $NULL)
 if ($EntraDN -ne "")
 {
     out-logfile -string "An entra DN was specified or calculated."
+
+    out-logfile -string $entraConnectorName.getType()
 
     $entraCSObject = get-CSObject -dn $EntraDN -connectorName $entraConnectorName
 }
