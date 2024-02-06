@@ -608,6 +608,73 @@ function get-CSObject
 
     return $functionCSObject
 }
+Function  start-sleepProgress
+{
+    [cmdletbinding()]
+
+    Param
+    (
+        [Parameter(Mandatory = $true)]
+        [string]$sleepString,
+        [Parameter(Mandatory = $true)]
+        [int]$sleepSeconds,
+        [Parameter(Mandatory = $false)]
+        [int]$sleepParentID=0,
+        [Parameter(Mandatory = $false)]
+        [int]$sleepID=0
+    )
+
+    #Output all parameters bound or unbound and their associated values.
+
+    write-functionParameters -keyArray $MyInvocation.MyCommand.Parameters.Keys -parameterArray $PSBoundParameters -variableArray (Get-Variable -Scope Local -ErrorAction Ignore)
+
+    Out-LogFile -string "********************************************************************************"
+    Out-LogFile -string "BEGIN  start-sleepProgess"
+    Out-LogFile -string "********************************************************************************"
+
+    if(($sleepId -eq 0)-and ($sleepParentID -eq 0))
+    {
+        For ($i=$sleepSeconds; $i -gt 0; $i--) 
+        {  
+            Write-Progress -Activity $sleepString -SecondsRemaining $i
+            Start-Sleep 1
+        }
+
+        write-progress -activity $sleepString -Completed
+    }
+    else 
+    {
+        For ($i=$sleepSeconds; $i -gt 0; $i--) 
+        {  
+            Write-Progress -Activity $sleepString -SecondsRemaining $i -Id $sleepID -ParentId $sleepParentID
+            Start-Sleep 1
+        }
+
+        Write-Progress -Activity $sleepString -Id $sleepID -ParentId $sleepParentID -Completed
+    }
+
+    Out-LogFile -string "END start-sleepProgess"
+    Out-LogFile -string "********************************************************************************"
+}
+
+Function suspend-EntraSync
+{
+    $retry = $TRUE
+    out-logfile -string "Enter suspend-EntraSync"
+
+    do
+    {
+        try {
+            Set-ADSyncScheduler -SyncCycleEnabled:$FALSE -errorAction STOP
+        }
+        catch {
+            out-logfile -string $_
+            start-sleepProgress -sleepString "Unable to set scheduled to false - sleeping" -sleepSeconds 15
+        }
+    }until ($retry -eq $FALSE)
+
+    out-logfile -string "End suspend-EntraSync"
+}
 
 
 #Create the log file.
@@ -812,3 +879,7 @@ if ($EntraDN -ne "")
 
     out-xmlFile -itemToExport $entraCSObject -itemNameToExport $entraCSObjectXML
 }
+
+out-logfile -string "Suspend Entra Connect synchornization while object removal and sync is in progress."
+
+suspend-EntraSync
