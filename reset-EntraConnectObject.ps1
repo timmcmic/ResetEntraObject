@@ -98,6 +98,8 @@ $adObjectXML = "adObject"
 $adCSObject = "adCSObject"
 $entraCSObject = "entraCSObject"
 
+$logFileName = (Get-Date -Format FileDateTime)
+
 
 Function new-LogFile
 {
@@ -580,7 +582,7 @@ Function Out-XMLFile
 
 #Create the log file.
 
-new-logfile -logFileName (Get-Date -Format FileDateTime) -logFolderPath $logFolderPath
+new-logfile -logFileName $logFileName -logFolderPath $logFolderPath
 
 #Start logging
 
