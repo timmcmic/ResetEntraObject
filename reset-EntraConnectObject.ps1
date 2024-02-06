@@ -481,3 +481,15 @@ if ($useActiveDirectoryLookup -eq $TRUE)
 
     out-logfile -string $adObject
 }
+
+#At this point we have determined if an AD Object is involved.  If it is not look to see if entraDN information requires calculation.
+
+if (($CalculateEntraDN -eq $FALSE) -and ($entraDN -eq ""))
+{
+    out-logfile -string "Calculate EntraDN is false and no entraDN provided - exit."
+}
+elseif (($CalculateEntraDN -eq $TRUE) -and ($userActiveDirectoryLookup -eq $FALSE))
+{
+    out-logfile -string "Calculating the EntraDN is only supported when specifying an Active Directory Object DN, Mail, or GUID."
+    out-logfile -string "Specify an Active Directory Object or specify the EntraDN from the Entra connector space." -isError:$true
+}
