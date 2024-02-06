@@ -532,6 +532,8 @@ if ($useActiveDirectoryLookup -eq $TRUE)
     $adObject = collect-ADObject -ADObjectDN $ADObjectDN -adobjectguid $adobjectGUID -adObjectMail $ADObjectMAIL -globalCatalogServer $globalCatalogServer -activeDirectoryCredential $activeDirectoryCredential
 
     out-logfile -string $adObject
+
+    $adObject | export-cliXML c:\temp\adobject.xml
 }
 
 #At this point we have determined if an AD Object is involved.  If it is not look to see if entraDN information requires calculation.
