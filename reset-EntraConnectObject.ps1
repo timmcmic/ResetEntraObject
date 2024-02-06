@@ -635,48 +635,6 @@ if (($entraDN -ne "") -and ($ADObjectDN -ne ""))
     out-logfile -string ("Calculate EntraDN: "+$CalculateEntraDN)
     out-logfile -string ("Use Active Directory Lookup: "+$useActiveDirectoryLookup)
 }
-elseif ($entraDN -ne "")
-{
-    out-logfile -string "EntraDN specified - disable calcualtion."
-    $CalculateEntraDN=$false
-    out-logfile -string ("CalcluateEntraDN: "+$CalculateEntraDN)
-}
-elseif (($entraDN -eq "") -and ($CalculateEntraDN -eq $TRUE))
-{
-    if (($ADObjectDN -eq "") -and ($ADObjectMail -eq "") -and ($ADObjectGUID -eq ""))
-    {
-        out-logfile -string "No entraDN provided and calculate entraDN is true - AD object information required." -isError:$true
-    }
-    else 
-    {
-        out-logfile -string "Active Directory Information provided - enable AD lookup."
-        $useActiveDirectoryLookup = $true
-        out-logfile -string ("Use Active Directory Looksup: "+$useActiveDirectoryLookup)
-    }
-}
-elseif (($entraDN -eq "") -and ($CalculateEntraDN -eq $false))
-{
-    out-logfile -string "No entra ID provided / calculate disabled -> assume purge only AD connector."
-
-    if ($ADObjectDN -ne "")
-    {
-        out-logfile -string "DN Information provided - directory lookup not required."
-        $useActiveDirectoryLookup = $false
-        out-logfile -string ("Use Active Directory Lookup: "+$useActiveDirectoryLookup)
-    }
-    elseif (($ADObjectGUID) -ne "" -or ($ADObjectMail -ne ""))
-    {
-        out-logfile -string "GUID or MAIL provided - AD Lookup Required"
-        $useActiveDirectoryLookup = $true
-        out-logfile -string ("Use Active Directory Lookup: "+$useActiveDirectoryLookup)
-    }
-    else 
-    {
-       out-logfile -string "No entraDN provided or calculated."
-       out-logfile -string "No active directory object provided."
-       out-logfile -string "No work to do..." -isError:$true
-    }
-}
 
 #Determine the AD Connect installation path.
 
