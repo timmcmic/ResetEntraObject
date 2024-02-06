@@ -440,6 +440,7 @@ function calculate-EntraDN
         if ($adObject.'ms-ds-ConsistencyGUID' -ne $NJLL)
         {
             out-logfile -string "MS-DS-ConsistencyGUID in use."
+            out-logfile -string $adObject.'ms-ds-consistencyGuid'
 
             $functionGuid = [GUID]$adObject.'ms-ds-ConsistencyGUID'
 
