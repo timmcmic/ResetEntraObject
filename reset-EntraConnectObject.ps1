@@ -515,7 +515,7 @@ function get-Connector
     }
     else 
     {
-        $functionConnectorName - $functionConnectors.name
+        $functionConnectorName = $functionConnectors.name
     }
 
     out-logfile -string "Exit get-Connector"
