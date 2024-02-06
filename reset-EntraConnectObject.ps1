@@ -428,54 +428,7 @@ function calculate-EntraDN
         $sourceAnchorAttribute
     )
 
-    [string]$globalCatalogPort=":3268"
-    [string]$globalCatalogWithPort=$globalCatalogServer+$globalCatalogPort
-    $functionADObject = $NULL
-
-    out-logfile -string "Entering collect-ADObject"
-
-    if ($ADObjectDN -ne "")
-    {
-        try
-        {
-            out-logfile -string "Finding AD Object by DN."
-            $functionADObject=get-adobject -identity $ADObjectDN -Server $globalCatalogWithPort -credential $activeDirectoryCredential -Properties * -errorAction STOP
-        }
-        catch {
-            out-logfile -string "ADObjectDN specified but object not found by DN."
-            out-logfile -string $_ -isError:$TRUE
-        }
-    }
-    elseif ($ADObjectGUID -ne "")
-    {
-        try
-        {
-            out-logfile -string "Finding AD Object by GUID"
-            $functionADObject=Get-ADObject -filter "objectGUID -eq `"$ADObjectGUID`"" -Server $globalCatalogWithPort -credential $activeDirectoryCredential -Properties * -errorAction STOP
-        }
-        catch {
-            out-logfile -string "ADObjectGUID specified but object not found by DN."
-            out-logfile -string $_ -isError:$TRUE
-        }
-    }
-    elseif ($ADObjectMail -ne "")
-    {
-        try
-        {
-            out-logfile -string "Finding AD Object by Mail."
-            $functionADObject=Get-ADObject -filter "mail -eq `"$ADObjectMail`"" -Server $globalCatalogWithPort -credential $activeDirectoryCredential -Properties * -errorAction STOP
-        }
-        catch {
-            out-logfile -string "ADObjectMAIL specified but object not found by DN."
-            out-logfile -string $_ -isError:$TRUE
-        }
-    }
-
-    out-logfile -string $functionADObject
-
-    out-logfile -string "Exiting collect-ADObject"
-
-    return $functionADObject
+    return ""
 }
 
 #Create the log file.
