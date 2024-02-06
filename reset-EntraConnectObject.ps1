@@ -83,6 +83,10 @@ Param
 [string]$entraConnectInstallPath = ""
 [boolean]$useActiveDirectoryLookup = $FALSE
 [string]$sourceAnchorAttribute = ""
+[string]$ADConnectorPowershell = "Microsoft Azure AD Sync\Extensions\AADConnector.psm1"
+[string]$ADSyncDiagnosticsPowershell = "Microsoft Azure AD Sync\Bin\ADSyncDiagnostics\ADSyncDiagnostics.psm1"
+[string]$ADConnectorPowershellFullpath = ""
+[string]$ADSyncDiagnosticsPowershellFullPath = ""
 
 
 Function new-LogFile
@@ -97,16 +101,8 @@ Function new-LogFile
         [string]$logFolderPath
     )
 
-    #First entry in split array is the prefix of the group - use that for log file name.
-    #The SMTP address may contain letters that are not permitted in a file name - for example ?.
-    #Using regex and a pattern to replace invalid file name characters with a -
-
     [string]$logFileSuffix=".log"
     [string]$fileName=$logFileName+$logFileSuffix
-    [string]$ADConnectorPowershell = "Microsoft Azure AD Sync\Extensions\AADConnector.psm1"
-    [string]$ADSyncDiagnosticsPowershell = "Microsoft Azure AD Sync\Bin\ADSyncDiagnostics\ADSyncDiagnostics.psm1"
-    [string]$ADConnectorPowershellFullpath = ""
-    [string]$ADSyncDiagnosticsPowershellFullPath = ""
 
     # Get our log file path
 
