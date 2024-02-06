@@ -691,7 +691,7 @@ Function delete-CSObject
     out-logfile -string "Enter delete-CSObject"
 
     try {
-        Remove-ADSyncCSObject -CsObject -Force -errorAction STOP
+        Remove-ADSyncCSObject -CsObject $csObject -Force -errorAction STOP
     }
     catch {
         out-logfile -string "Error deleting CS Object."
