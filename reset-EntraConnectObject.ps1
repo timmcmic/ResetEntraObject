@@ -82,6 +82,7 @@ Param
 
 [string]$entraConnectInstallPath = ""
 [boolean]$useActiveDirectoryLookup = $FALSE
+[string]$sourceAnchorAttribute = ""
 
 
 Function new-LogFile
@@ -344,6 +345,27 @@ function validate-EntraConnectServer
     return $functionPathReturn
 }
 
+function query-SourceAnchor
+{
+    [string]$globalSourceAnchorValue = "Microsoft.SynchronizationOption.AnchorAttribute"
+    out-logfile -string "Entering query-SourceAnchor"
+
+    out-logfile -string "Obtain Entra Connect Global Settings"
+
+    $functionGlobalSettings = Get-ADSyncGlobalSettings
+    $functionSourceAnchor = $functionGlobalSettings | where {$_.name -eq $globalSourceAnchorValue}
+
+    out-logfile -string $functionSourceAnchor
+
+    $functionSourceAnchorValue = $functionSourceAnchor.value
+
+    out-logfile -string $functionSourceAnchorValue
+    
+    out-logfile -string "Exiting query-SourceAnchor"
+
+    return $functionSourceAnchorValue
+}
+
 
 #Create the log file.
 
@@ -398,3 +420,9 @@ out-logfile -string "Determine the Entra Connect installation root path - requir
 $entraConnectInstallPath=validate-EntraConnectServer
 
 out-logfile -string $entraConnectInstallPath
+
+out-logfile -string "Determine the source anchor utilized in the installation."
+
+$sourceAnchorAttribute = query-SourceAnchor
+
+out-logfile -string $sourceAnchorAttribute
