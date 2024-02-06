@@ -594,7 +594,8 @@ function get-CSObject
 
     out-logfile -string $dn
     out-logfile -string $connectorName
-    out-logfile -string $connectorName.substring(1)
+    $test = $connectorName
+    out-logfile -string $test.substring(1)
 
     $functionCSObject=$NULL
 
