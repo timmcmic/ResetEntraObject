@@ -708,12 +708,15 @@ Function start-EntraSync
     Param
     (
         [Parameter(Mandatory = $true)]
-        $policyType
+        $policyType,
+        [Parameter(Mandatory = $true)]
+        $DN
     )
 
     $retry = $true
     $delta = "Delta"
     $single = "Single"
+    $output = $NULL
 
     out-logfile -string "Enter start-EntraSync"
 
@@ -731,6 +734,16 @@ Function start-EntraSync
                 start-sleepProgress -sleepString "Unable to perform delta sync - sleeping" -sleepSeconds 15
             }
         }until ($retry -eq $FALSE)
+    }
+    elseif ($policyType -eq $single)
+    {
+        try {
+            Invoke-ADSyncSingleObjectSync -DistinguishedName $DN -errorAction STOP
+        }
+        catch {
+            out-logfile -string "Uanble to perform single object sync."
+            out-logfile -string $_ -isError:$true
+        }
     }
 
     out-logfile -string "End start-EntraSync"
@@ -959,5 +972,16 @@ out-logfile -string "If the object was an entra connetor space only move detal s
 
 if (($adCSObject -eq $NULL) -and ($entraCSObject -ne $NULL))
 {
-    start-EntraSync -policyType "Delta"
+    start-EntraSync -policyType "Delta" -dn "NONE"
+}
+else 
+{
+    if ($adobject -ne $NULL)
+    {
+        start-EntraSync -policyType "Single" -dn $adobject.distinguishedName
+    }
+    else 
+    {
+        start-EntraSync -policyType "Single" -dn $ADObjectDN
+    }
 }
