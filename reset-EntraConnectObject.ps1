@@ -549,7 +549,7 @@ Function Out-XMLFile
 
         #Update the log folder path to include the static folder.
 
-        $logFolderPath = $logFolderPath+"\"+$logFileName+"\"
+        $logFolderPath = $logFolderPath+$logFileName+"\"
         
         # Get our log file path and combine it with the filename
 
