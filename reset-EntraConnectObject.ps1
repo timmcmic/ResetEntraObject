@@ -678,6 +678,28 @@ Function suspend-EntraSync
     out-logfile -string "End suspend-EntraSync"
 }
 
+Function delete-CSObject
+{
+    [cmdletbinding()]
+
+    Param
+    (
+        [Parameter(Mandatory = $true)]
+        $csObject
+    )
+
+    out-logfile -string "Enter delete-CSObject"
+
+    try {
+        Remove-ADSyncCSObject -CsObject -Force -errorAction STOP
+    }
+    catch {
+        out-logfile -string "Error deleting CS Object."
+        out-logfile -string $_ -isError:$true
+    }
+
+    out-logfile -string "End delete-CSObject"
+}
 
 #Create the log file.
 
@@ -885,3 +907,15 @@ if ($EntraDN -ne "")
 out-logfile -string "Suspend Entra Connect synchornization while object removal and sync is in progress."
 
 suspend-EntraSync
+
+out-logfile -string "Suspend Entra Connect synchronization successful - proceed with connector space object deletion."
+
+if ($adCSObject -ne $NULL)
+{
+    delete-CSObject -csObject $adCSObject
+}
+
+if ($entraCSObject -ne $NULL)
+{
+    delete-CSObject -csObject $entraCSObject
+}
