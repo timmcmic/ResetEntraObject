@@ -442,11 +442,10 @@ function calculate-EntraDN
         if ($adObject.'ms-ds-ConsistencyGUID' -ne "")
         {
             out-logfile -string "MS-DS-ConsistencyGUID in use."
-            out-logfile -string $adObject.'ms-ds-consistencyGuid'
 
             $functionGuid = [GUID]$adObject.'ms-ds-ConsistencyGUID'
 
-            out-logfile -string $functionGUID
+            out-logfile -string $functionGUID.Guid
         }
     }
 
@@ -548,8 +547,6 @@ if (($CalculateEntraDN -eq $TRUE) -and ($entraDN -eq ""))
     $sourceAnchorAttribute = query-SourceAnchor
 
     out-logfile -string "Calculate the Entra Connector Space DN"
-
-    out-logfile -string $adobject.'ms-ds-ConsistencyGUID'
 
     $entraDN = calculate-EntraDN -adObject $adObject -sourceAnchorAttribute $sourceAnchorAttribute
 
