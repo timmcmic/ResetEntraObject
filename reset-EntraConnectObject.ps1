@@ -635,6 +635,12 @@ if (($entraDN -ne "") -and ($ADObjectDN -ne ""))
     out-logfile -string ("Calculate EntraDN: "+$CalculateEntraDN)
     out-logfile -string ("Use Active Directory Lookup: "+$useActiveDirectoryLookup)
 }
+elseif ((($ADObjectDN -ne "") -or ($ADObjectGUID -ne "") -or ($ADObjectMail -ne "")) -and ($entraDN -eq "") -and ($CalculateEntraDN -eq $true))
+{
+    out-logfile -string "An Active Directory Identifier was provided / no entraDN was provided / calculate EntraDN is true."
+}
+
+exit
 
 #Determine the AD Connect installation path.
 
