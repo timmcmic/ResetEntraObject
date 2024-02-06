@@ -430,6 +430,7 @@ function calculate-EntraDN
 
     $anchor0 = "objectGUID"
     $anchor1 = "ms-ds-ConsistencyGuid"
+    $functionGUID = $NULL
 
     if (($sourceAnchorAttribute -eq $anchor0) -or ($sourceAnchorAttribute -eq $anchor1))
     {
@@ -439,6 +440,10 @@ function calculate-EntraDN
         if ($adObject.'ms-ds-ConsistencyGUID' -ne "")
         {
             out-logfile -string "MS-DS-ConsistencyGUID in use."
+
+            $functionGuid = [GUID]$adObject.'ms-ds-ConsistencyGUID'
+
+            out-logfile -string $functionGUID
         }
     }
 
