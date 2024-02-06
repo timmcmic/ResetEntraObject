@@ -662,6 +662,16 @@ elseif ((($ADObjectDN -ne "") -or ($ADObjectGUID -ne "") -or ($ADObjectMail -ne 
         out-logfile -string ("Use Active Directory Lookup: "+$useActiveDirectoryLookup)
     }
 }
+elseif ((($ADObjectDN -eq "") -and ($ADObjectGUID -eq "") -and ($ADObjectMail -eq "")) -and ($entraDN -ne ""))
+{
+    out-logfile -string "EntraDN provided / No Active Directory Information Provided - assume delete entra connector space only."
+    $useActiveDirectoryLookup=$false
+    $CalculateEntraDN=$false
+
+    out-logfile -string ("Use Active Directory Lookup: "+$useActiveDirectoryLookup)
+    out-logfile -string ("CalculateEntraDN: "+$CalculateEntraDN)    
+}
+
 
 exit
 
