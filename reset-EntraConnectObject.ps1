@@ -986,10 +986,10 @@ else
 {
     if ($adobject -ne $NULL)
     {
-        start-EntraSync -policyType "Single" -dn $adobject.distinguishedName
+        $singleItemData = start-EntraSync -policyType "Single" -dn $adobject.distinguishedName
     }
     else 
     {
-        start-EntraSync -policyType "Single" -dn $ADObjectDN
+        $singleItemData = start-EntraSync -policyType "Single" -dn $ADObjectDN
     }
 }
