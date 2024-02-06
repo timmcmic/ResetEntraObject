@@ -311,7 +311,13 @@ function query-SourceAnchor
 
     out-logfile -string "Obtain Entra Connect Global Settings"
 
-    $functionGlobalSettings = Get-ADSyncGlobalSettings
+    try {
+        $functionGlobalSettings = Get-ADSyncGlobalSettings -errorAction STOP
+    }
+    catch {
+        out-logfile -string $_ -isError:$TRUE
+    }
+
     $functionSourceAnchor = $functionGlobalSettings.parameters | where {$_.name -eq $globalSourceAnchorValue}
 
     out-logfile -string $functionSourceAnchor
@@ -360,6 +366,66 @@ function collect-ADObject
         $globalCatalogServer,
         [Parameter(Mandatory = $true)]
         $activeDirectoryCredential
+    )
+
+    [string]$globalCatalogPort=":3268"
+    [string]$globalCatalogWithPort=$globalCatalogServer+$globalCatalogPort
+    $functionADObject = $NULL
+
+    out-logfile -string "Entering collect-ADObject"
+
+    if ($ADObjectDN -ne "")
+    {
+        try
+        {
+            out-logfile -string "Finding AD Object by DN."
+            $functionADObject=get-adobject -identity $ADObjectDN -Server $globalCatalogWithPort -credential $activeDirectoryCredential -Properties * -errorAction STOP
+        }
+        catch {
+            out-logfile -string "ADObjectDN specified but object not found by DN."
+            out-logfile -string $_ -isError:$TRUE
+        }
+    }
+    elseif ($ADObjectGUID -ne "")
+    {
+        try
+        {
+            out-logfile -string "Finding AD Object by GUID"
+            $functionADObject=Get-ADObject -filter "objectGUID -eq `"$ADObjectGUID`"" -Server $globalCatalogWithPort -credential $activeDirectoryCredential -Properties * -errorAction STOP
+        }
+        catch {
+            out-logfile -string "ADObjectGUID specified but object not found by DN."
+            out-logfile -string $_ -isError:$TRUE
+        }
+    }
+    elseif ($ADObjectMail -ne "")
+    {
+        try
+        {
+            out-logfile -string "Finding AD Object by Mail."
+            $functionADObject=Get-ADObject -filter "mail -eq `"$ADObjectMail`"" -Server $globalCatalogWithPort -credential $activeDirectoryCredential -Properties * -errorAction STOP
+        }
+        catch {
+            out-logfile -string "ADObjectMAIL specified but object not found by DN."
+            out-logfile -string $_ -isError:$TRUE
+        }
+    }
+
+    out-logfile -string $functionADObject
+
+    out-logfile -string "Exiting collect-ADObject"
+
+    return $functionADObject
+}
+
+function calculate-EntraDN
+{
+    Param
+    (
+        [Parameter(Mandatory = $true)]
+        $adObject,
+        [Parameter(Mandatory = $true)]
+        $sourceAnchorAttribute
     )
 
     [string]$globalCatalogPort=":3268"
@@ -495,10 +561,24 @@ if ($useActiveDirectoryLookup -eq $TRUE)
 
 if (($CalculateEntraDN -eq $FALSE) -and ($entraDN -eq ""))
 {
-    out-logfile -string "Calculate EntraDN is false and no entraDN provided - exit."
+    out-logfile -string "Calculate EntraDN is false and no entraDN provided - exit." -isError:$true
 }
-elseif (($CalculateEntraDN -eq $TRUE) -and ($userActiveDirectoryLookup -eq $FALSE))
+elseif (($calculateEntraDN -eq $TRUE) -and ($entraDN -ne ""))
 {
-    out-logfile -string "Calculating the EntraDN is only supported when specifying an Active Directory Object DN, Mail, or GUID."
-    out-logfile -string "Specify an Active Directory Object or specify the EntraDN from the Entra connector space." -isError:$true
+    out-logfile -string "Calcualting EntraDN is enabled but EntraDN from connector space provided - invalid request." -isError:$TRUE
+}
+
+#At this time we can calculate the entraDN if necessary.
+
+if (($CalculateEntraDN -eq $TRUE))
+{
+    out-logfile -string "Determine the source anchor."
+
+    $sourceAnchorAttribute = query-SourceAnchor
+
+    out-logfile -string "Calculate the Entra Connector Space DN"
+
+    $entraDN = calculate-EntraDN -adObject $adObject -sourceAnchorAttribute $sourceAnchorAttribute
+
+    out-logfile -string $EntraDN
 }
