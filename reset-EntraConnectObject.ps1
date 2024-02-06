@@ -551,7 +551,7 @@ Function Out-XMLFile
 
         #Update the log folder path to include the static folder.
 
-        $logFolderPath = $logFolderPath+$logFileName+"\"
+        $logFolderPath = $logFolderPath+"\"+$logFileName+"\"
         
         # Get our log file path and combine it with the filename
 
@@ -562,8 +562,6 @@ Function Out-XMLFile
         out-logfile -string ("XML File Name = "+$fileName)
         out-logfile -string ("Log Folder Path = "+$logFolderPath)
         out-logfile -string ("Log File = "+$LogFile)
-
-        exit
 
         # Write everything to our log file and the screen
 
