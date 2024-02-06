@@ -594,12 +594,12 @@ function get-CSObject
 
     out-logfile -string $dn
     out-logfile -string $connectorName
-    out-logfile -string $connectorName.trim()
+    out-logfile -string $connectorName.substring(1)
 
     $functionCSObject=$NULL
 
     try {
-        $functionCSObject = Get-ADSyncCSObject -DistinguishedName $dn -ConnectorName $connectorName
+        $functionCSObject = Get-ADSyncCSObject -DistinguishedName $dn -ConnectorName $connectorName.substring(1)
     }
     catch {
         out-logfile -string "Uanble to locate CS Object by DN."
