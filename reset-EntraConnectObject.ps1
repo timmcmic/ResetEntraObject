@@ -751,7 +751,7 @@ if ($CalculateEntraDN -eq $TRUE)
 
     out-logfile -string "Calculate the Entra Connector Space DN"
 
-    $entraDN = calculate-EntraDN -adObject $adObject -dn $ADObjectDN -sourceAnchorAttribute $sourceAnchorAttribute
+    $entraDN = calculate-EntraDN -adObject $adObject -sourceAnchorAttribute $sourceAnchorAttribute
 
     out-logfile -string $EntraDN
 }
