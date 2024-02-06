@@ -658,7 +658,7 @@ elseif (($ADObjectDN -ne "") -or ($ADObjectGUID -ne "") -or ($ADObjectMail -ne "
     {
         out-logfile -string "An EntraDN was not specified and calculate false - assume AD connector space only purge."
 
-        if ($adObjectDN -eq "")
+        if ($adObjectDN -ne "")
         {
             out-logfile -string "AD Object DN specified - AD looksups no required."
             $useActiveDirectoryLookup = $false
