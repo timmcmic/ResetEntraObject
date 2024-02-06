@@ -635,47 +635,40 @@ if (($entraDN -ne "") -and ($ADObjectDN -ne ""))
     out-logfile -string ("Calculate EntraDN: "+$CalculateEntraDN)
     out-logfile -string ("Use Active Directory Lookup: "+$useActiveDirectoryLookup)
 }
-elseif ((($ADObjectDN -ne "") -or ($ADObjectGUID -ne "") -or ($ADObjectMail -ne "")) -and ($entraDN -eq "") -and ($CalculateEntraDN -eq $true))
+elseif (($ADObjectDN -ne "") -or ($ADObjectGUID -ne "") -or ($ADObjectMail -ne ""))
 {
-    out-logfile -string "An Active Directory Identifier was provided / no entraDN was provided / calculate EntraDN is true."
-    out-logfile -string "Active directory lookup is required to calculate the entraDN."
+    out-logfile -string "Active Directory Information Provided."
 
-    $useActiveDirectoryLookup = $TRUE
-
-    out-logfile -string ("Use Active Directory Lookup: "+$useActiveDirectoryLookup)
-}
-elseif ((($ADObjectDN -ne "") -or ($ADObjectGUID -ne "") -or ($ADObjectMail -ne "")) -and ($entraDN -eq "") -and ($CalculateEntraDN -eq $false))
-{
-    out-logfile -string "An Active Directory Identifier was provided / no entraDN provided / calculdate entraDN is false."
-    out-logfile -string "Purge from AD Connector space only assumed."
-
-    if ($adObjectDN -ne "")
+    if (($entraDN -eq "") -and ($CalculateEntraDN -eq $TRUE))
     {
-        out-logfile -string "AD Object DN provided - on need for directory lookup."
-        $useActiveDirectoryLookup = $false
-        out-logfile -string ("Use Active Directory Lookup: "+$useActiveDirectoryLookup)
-    }
-    else 
-    {
-        out-logfile -string "AD Object Mail or GUID provdied - object must be looked up to determine DN."
-        $useActiveDirectoryLookup = $true
-        out-logfile -string ("Use Active Directory Lookup: "+$useActiveDirectoryLookup)
-    }
-}
-elseif ((($ADObjectDN -eq "") -and ($ADObjectGUID -eq "") -and ($ADObjectMail -eq "")) -and ($entraDN -ne ""))
-{
-    out-logfile -string "EntraDN provided / No Active Directory Information Provided - assume delete entra connector space only."
-    $useActiveDirectoryLookup=$false
-    $CalculateEntraDN=$false
+       out-logfile -string "No entra ID provided."
+       out-logfile -string "Calculate EntraDN is TRUE."
+       out-logfile -string "Allow directory lookup to calculate entraDN." 
 
-    out-logfile -string ("Use Active Directory Lookup: "+$useActiveDirectoryLookup)
-    out-logfile -string ("CalculateEntraDN: "+$CalculateEntraDN)    
-}
-else
-{
-    out-logfile -string "No AD Information provided."
-    out-logfile -string "No EntraDN provided."
-    out-logfile -string "No work to be done..." -isError:$true
+       $useActiveDirectoryLookup = $TRUE
+
+       out-logfile -string ("Use Active Directory Lookup: "+$useActiveDirectoryLookup)
+    }
+    elseif (($entraDN -ne "") -and ($CalculateEntraDN -eq $TRUE))
+    {
+        out-logfile -string "Entra DN provided with AD Information - calculate EntraDN not necessary."
+        $CalculateEntraDN=$false
+    }
+    elseif (($entraDN -eq "") -and ($CalculateEntraDN -eq $FALSE))
+    {
+        out-logfile -string "An EntraDN was not specified and calculate false - assume AD connector space only purge."
+
+        if ($adObjectDN -eq "")
+        {
+            out-logfile -string "AD Object DN specified - AD looksups no required."
+            $useActiveDirectoryLookup = $false
+        }
+        else 
+        {
+            out-logfile -string "AD Object Mail or GUID specified - lookup required."
+            $useActiveDirectoryLookup = $true
+        }
+    }
 }
 
 
