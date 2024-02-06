@@ -425,6 +425,11 @@ function collect-ADObject
         }
     }
 
+    if ($functionADObject -eq $NULL)
+    {
+        out-logfile -string "No ad object was found using specified criteria." -isError:$true
+    }
+
     out-logfile -string $functionADObject
 
     out-logfile -string "Exiting collect-ADObject"
