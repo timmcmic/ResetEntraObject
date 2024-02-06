@@ -506,7 +506,7 @@ function get-Connector
     out-logfile -string "Enter get-Connector"
 
     $functionConnectors = $NULL
-    $functionConnectorName
+    [string]$functionConnectorName
 
     try {
         $functionConnectors = Get-ADSyncConnector -errorAction STOP | where {$_.connectorTypeName -eq $connectorType}
