@@ -95,8 +95,8 @@ $entraConnectorType = "Extensible2"
 $entraConnectorName = ""
 
 $adObjectXML = "adObject"
-$adCSObject = "adCSObject"
-$entraCSObject = "entraCSObject"
+$adCSObjectXML = "adCSObject"
+$entraCSObjectXML = "entraCSObject"
 
 $logFileName = (Get-Date -Format FileDateTime)
 
@@ -737,4 +737,15 @@ if ($adobject -ne $NULL)
     out-logfile -string "An active directory object was specified."
 
     $adCSObject = get-CSObject -dn $adobject.distinguishedName -connectorName $ADConnectorName
+
+    Out-LogFile -string $adCSObject
+
+    out-xmlFile -itemNameToExport $adCSObject -itemNameToExport $adCSObjectXML
+}
+
+if ($EntraDN -ne "")
+{
+    out-logfile -string "An entra DN was specified or calculated."
+
+    $entraCSObject = get-CSObject -dn $EntraDN -connectorName $entraConnectorName
 }
