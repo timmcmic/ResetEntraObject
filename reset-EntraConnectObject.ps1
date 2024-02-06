@@ -353,7 +353,7 @@ function query-SourceAnchor
     out-logfile -string "Obtain Entra Connect Global Settings"
 
     $functionGlobalSettings = Get-ADSyncGlobalSettings
-    $functionSourceAnchor = $functionGlobalSettings | where {$_.name -eq $globalSourceAnchorValue}
+    $functionSourceAnchor = $functionGlobalSettings.parameters | where {$_.name -eq $globalSourceAnchorValue}
 
     out-logfile -string $functionSourceAnchor
 
