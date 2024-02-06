@@ -644,6 +644,24 @@ elseif ((($ADObjectDN -ne "") -or ($ADObjectGUID -ne "") -or ($ADObjectMail -ne 
 
     out-logfile -string ("Use Active Directory Lookup: "+$useActiveDirectoryLookup)
 }
+elseif ((($ADObjectDN -ne "") -or ($ADObjectGUID -ne "") -or ($ADObjectMail -ne "")) -and ($entraDN -eq "") -and ($CalculateEntraDN -eq $false))
+{
+    out-logfile -string "An Active Directory Identifier was provided / no entraDN provided / calculdate entraDN is false."
+    out-logfile -string "Purge from AD Connector space only assumed."
+
+    if ($adObjectDN -ne "")
+    {
+        out-logfile -string "AD Object DN provided - on need for directory lookup."
+        $useActiveDirectoryLookup = $false
+        out-logfile -string ("Use Active Directory Lookup: "+$useActiveDirectoryLookup)
+    }
+    else 
+    {
+        out-logfile -string "AD Object Mail or GUID provdied - object must be looked up to determine DN."
+        $useActiveDirectoryLookup = $true
+        out-logfile -string ("Use Active Directory Lookup: "+$useActiveDirectoryLookup)
+    }
+}
 
 exit
 
