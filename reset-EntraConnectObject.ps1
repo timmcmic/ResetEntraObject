@@ -561,6 +561,8 @@ Function Out-XMLFile
         out-logfile -string ("Log Folder Path = "+$logFolderPath)
         out-logfile -string ("Log File = "+$LogFile)
 
+        exit
+
         # Write everything to our log file and the screen
 
         try 
