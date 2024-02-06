@@ -443,17 +443,24 @@ function calculate-EntraDN
             out-logfile -string $adObject.'ms-ds-consistencyguid'
 
             $functionGuid = [GUID]$adObject.'ms-ds-ConsistencyGUID'
-
-            out-logfile -string $functionGUID.Guid
-
-            $functionBase64String = [System.Convert]::ToBase64String($functionGuid.ToByteArray())
-
-            out-logfile -string $functionBase64String
-
-            $functionDN = ConvertTo-ADSyncAadDistinguishedName -sourceAnchor $functionBase64String
-
-            out-logfile -string $functionDN
         }
+        else
+        {
+            out-logfile -string "ObjectGUID in Use."
+            out-logfile -string $adObject.objectGUID
+
+            $functionGuid = [GUID]$adObject.objectGUID
+        }
+
+        out-logfile -string $functionGUID.Guid
+
+        $functionBase64String = [System.Convert]::ToBase64String($functionGuid.ToByteArray())
+
+        out-logfile -string $functionBase64String
+
+        $functionDN = ConvertTo-ADSyncAadDistinguishedName -sourceAnchor $functionBase64String
+
+        out-logfile -string $functionDN
     }
 
     return ""
