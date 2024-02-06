@@ -653,6 +653,17 @@ elseif (($ADObjectDN -ne "") -or ($ADObjectGUID -ne "") -or ($ADObjectMail -ne "
     {
         out-logfile -string "Entra DN provided with AD Information - calculate EntraDN not necessary."
         $CalculateEntraDN=$false
+        
+        if ($adObjectDN -ne "")
+        {
+            out-logfile -string "AD Object DN specified - AD looksups no required."
+            $useActiveDirectoryLookup = $false
+        }
+        else 
+        {
+            out-logfile -string "AD Object Mail or GUID specified - lookup required."
+            $useActiveDirectoryLookup = $true
+        }
     }
     elseif (($entraDN -eq "") -and ($CalculateEntraDN -eq $FALSE))
     {
