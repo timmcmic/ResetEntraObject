@@ -434,10 +434,10 @@ function calculate-EntraDN
 
     if (($sourceAnchorAttribute -eq $anchor0) -or ($sourceAnchorAttribute -eq $anchor1))
     {
-        out-logfile -string "Source anchor is objectGUID of ms-ds-ConsistencyGUID"
+        out-logfile -string "Source anchor is objectGUID or ms-ds-ConsistencyGUID"
         out-logfile -string "Determine if object has ms-ds-ConsistencyGUID"
 
-        if ($adObject.'ms-ds-ConsistencyGUID' -ne "")
+        if ($adObject.'ms-ds-ConsistencyGUID' -ne $NULL)
         {
             out-logfile -string "MS-DS-ConsistencyGUID in use."
             out-logfile -string $adObject.'ms-ds-consistencyguid'
