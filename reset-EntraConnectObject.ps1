@@ -666,6 +666,8 @@ Function suspend-EntraSync
     {
         try {
             Set-ADSyncScheduler -SyncCycleEnabled:$FALSE -errorAction STOP
+            out-logfile -string "Sync cycle suspended successfully."
+            $retry=$FALSE
         }
         catch {
             out-logfile -string $_
