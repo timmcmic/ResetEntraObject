@@ -671,6 +671,12 @@ elseif ((($ADObjectDN -eq "") -and ($ADObjectGUID -eq "") -and ($ADObjectMail -e
     out-logfile -string ("Use Active Directory Lookup: "+$useActiveDirectoryLookup)
     out-logfile -string ("CalculateEntraDN: "+$CalculateEntraDN)    
 }
+else
+{
+    out-logfile -string "No AD Information provided."
+    out-logfile -string "No EntraDN provided."
+    out-logfile -string "No work to be done..." -isError:$true
+}
 
 
 exit
