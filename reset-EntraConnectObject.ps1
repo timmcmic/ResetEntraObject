@@ -595,11 +595,11 @@ function get-CSObject
     $functionCSObject
 
     try {
-        $functionCSObject = Get-ADSyncCSObject -DistinguishedName $dn -ConnectorName $connectorName
+        $functionCSObject = Get-ADSyncCSObject -DistinguishedName $dn -ConnectorName "home.e-mcmichael.com"
     }
     catch {
         out-logfile -string "Uanble to locate CS Object by DN."
-        out-logfile -string $_
+        out-logfile -string $_ -isError:$true
     }
     
     out-logfile -string $functionCSObject
