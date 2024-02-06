@@ -701,6 +701,41 @@ Function delete-CSObject
     out-logfile -string "End delete-CSObject"
 }
 
+Function start-EntraSync
+{
+    [cmdletbinding()]
+
+    Param
+    (
+        [Parameter(Mandatory = $true)]
+        $policyType
+    )
+
+    $retry = $true
+    $delta = "Delta"
+    $single = "Single"
+
+    out-logfile -string "Enter start-EntraSync"
+
+    if ($policyType -eq $delta)
+    {
+        do
+        {
+            try {
+                start-adSyncSyncCycle -policyType Delta -errorAction STOP
+                out-logfile -string "Delta sync triggered successfully."
+                $retry=$FALSE
+            }
+            catch {
+                out-logfile -string $_
+                start-sleepProgress -sleepString "Unable to perform delta sync - sleeping" -sleepSeconds 15
+            }
+        }until ($retry -eq $FALSE)
+    }
+
+    out-logfile -string "End start-EntraSync"
+}
+
 #Create the log file.
 
 new-logfile -logFileName $logFileName -logFolderPath $logFolderPath
@@ -919,3 +954,6 @@ if ($entraCSObject -ne $NULL)
 {
     delete-CSObject -csObject $entraCSObject
 }
+
+out-logfile -string "If the object was an entra connetor space only move detal sync required - otherwise single object is fine."
+
