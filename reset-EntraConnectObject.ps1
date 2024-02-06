@@ -17,7 +17,7 @@
 
 <#PSScriptInfo
 
-.VERSION 1.10
+.VERSION 2.0
 
 .GUID f9cfe327-869f-410e-90e3-7286c94c31fd
 
@@ -77,7 +77,9 @@ Param
     [psCredential]$activeDirectoryCredential=$NULL,
     #Define general parameters for the script.
     [Parameter(Mandatory = $true)]
-    [string]$logFolderPath=$NULL
+    [string]$logFolderPath=$NULL,
+    [Parameter(Mandatory = $true)]
+    [boolean]$skipSingleItemSync=$false
 )
 
 #Define the script parameters.
@@ -1057,7 +1059,7 @@ if (($adCSObject -eq $NULL) -and ($entraCSObject -ne $NULL))
 {
     start-EntraSync -policyType "Delta" -dn "NONE"
 }
-else 
+elseif ($skipSingleItemSync -eq $false) 
 {
     if ($adobject -ne $NULL)
     {
