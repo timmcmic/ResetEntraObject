@@ -593,7 +593,8 @@ function get-CSObject
     out-logfile -string "Enter get-CSObject"
 
     out-logfile -string $dn
-    out-logfile -string $connectorname.trim()
+    out-logfile -string $connectorName
+    out-logfile -string $connectorName.trim()
 
     $functionCSObject=$NULL
 
