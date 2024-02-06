@@ -475,7 +475,7 @@ function calculate-EntraDN
         out-logfile -string $functionDN
     }
 
-    return ""
+    return $functionDN
 }
 
 #Create the log file.
@@ -576,6 +576,7 @@ if (($CalculateEntraDN -eq $TRUE) -and ($entraDN -eq ""))
 
     out-logfile -string "Calculate the Entra Connector Space DN"
 
-    $entraDN = calculate-EntraDN -adObject $adObject -sourceAnchorAttribute 'extensionAttribute1'
+    $entraDN = calculate-EntraDN -adObject $adObject -sourceAnchorAttribute $sourceAnchorAttribute
+    
     out-logfile -string $EntraDN
 }
