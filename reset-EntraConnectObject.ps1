@@ -795,7 +795,7 @@ Function Out-JSONFile
 
     try 
     {
-        $itemToExport | Out-JSONFile $LogFile
+        $itemToExport | Out-JSONFile -FilePath $LogFile
     }
     catch 
     {
