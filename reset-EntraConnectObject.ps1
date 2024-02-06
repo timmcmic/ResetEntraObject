@@ -680,6 +680,27 @@ Function suspend-EntraSync
     out-logfile -string "End suspend-EntraSync"
 }
 
+Function resume-EntraSync
+{
+    $retry = $TRUE
+    out-logfile -string "Enter resume-EntraSync"
+
+    do
+    {
+        try {
+            Set-ADSyncScheduler -SyncCycleEnabled:$TRUE -errorAction STOP
+            out-logfile -string "Sync cycle suspended successfully."
+            $retry=$FALSE
+        }
+        catch {
+            out-logfile -string $_
+            start-sleepProgress -sleepString "Unable to set scheduled to false - sleeping" -sleepSeconds 15
+        }
+    }until ($retry -eq $FALSE)
+
+    out-logfile -string "End resume-EntraSync"
+}
+
 Function delete-CSObject
 {
     [cmdletbinding()]
@@ -1047,5 +1068,9 @@ if ($singleItemData -ne $NULL)
 {
     Out-JSONFile -itemToExport $singleItemData -itemNameToExport $singleItemXML
 }
+
+out-logfile -string "Re-enable the sync cycle."
+
+resume-EntraSync
 
 out-logfile -string "Opertaion completed."
