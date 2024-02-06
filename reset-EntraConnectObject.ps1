@@ -92,7 +92,7 @@ Param
 $adObject = $NULL
 $adConnectorType = "AD"
 $entraConnectorType = "Extensible2"
-[string[$entraConnectorName = ""
+[string]$entraConnectorName = ""
 
 $adObjectXML = "adObject"
 $adCSObjectXML = "adCSObject"
