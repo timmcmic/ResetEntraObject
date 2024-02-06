@@ -462,6 +462,10 @@ function calculate-EntraDN
 
         out-logfile -string $functionDN
     }
+    else 
+    {
+        $functionBase64String = $adObject.'$sourceAnchorAttribute'
+    }
 
     return ""
 }
@@ -564,7 +568,6 @@ if (($CalculateEntraDN -eq $TRUE) -and ($entraDN -eq ""))
 
     out-logfile -string "Calculate the Entra Connector Space DN"
 
-    $entraDN = calculate-EntraDN -adObject $adObject -sourceAnchorAttribute $sourceAnchorAttribute
-
+    $entraDN = calculate-EntraDN -adObject $adObject -sourceAnchorAttribute 'extensionAttribute1'
     out-logfile -string $EntraDN
 }
