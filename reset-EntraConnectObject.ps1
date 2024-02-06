@@ -100,6 +100,9 @@ $entraCSObject = "entraCSObject"
 
 $logFileName = (Get-Date -Format FileDateTime)
 
+$adCSObject = $NULL
+$entraCSObject = $NULL
+
 
 Function new-LogFile
 {
@@ -530,53 +533,82 @@ function get-Connector
 }
 
 Function Out-XMLFile
-     {
-        [cmdletbinding()]
+    {
+    [cmdletbinding()]
 
-        Param
-        (
-            [Parameter(Mandatory = $true)]
-            $itemToExport,
-            [Parameter(Mandatory = $true)]
-            [string]$itemNameToExport
-        )
+    Param
+    (
+        [Parameter(Mandatory = $true)]
+        $itemToExport,
+        [Parameter(Mandatory = $true)]
+        [string]$itemNameToExport
+    )
 
-        Out-LogFile -string "********************************************************************************"
-        Out-LogFile -string "BEGIN OUT-XMLFILE"
-        Out-LogFile -string "********************************************************************************"
+    Out-LogFile -string "********************************************************************************"
+    Out-LogFile -string "BEGIN OUT-XMLFILE"
+    Out-LogFile -string "********************************************************************************"
 
-        #Declare function variables.
+    #Declare function variables.
 
-        $fileName = $itemNameToExport+".xml"
+    $fileName = $itemNameToExport+".xml"
 
-        #Update the log folder path to include the static folder.
+    #Update the log folder path to include the static folder.
 
-        $logFolderPath = $logFolderPath+"\"+$logFileName+"\"
-        
-        # Get our log file path and combine it with the filename
+    $logFolderPath = $logFolderPath+"\"+$logFileName+"\"
+    
+    # Get our log file path and combine it with the filename
 
-        $LogFile = Join-path $logFolderPath $fileName
+    $LogFile = Join-path $logFolderPath $fileName
 
-        #Write our variables to the log.
+    #Write our variables to the log.
 
-        out-logfile -string ("XML File Name = "+$fileName)
-        out-logfile -string ("Log Folder Path = "+$logFolderPath)
-        out-logfile -string ("Log File = "+$LogFile)
+    out-logfile -string ("XML File Name = "+$fileName)
+    out-logfile -string ("Log Folder Path = "+$logFolderPath)
+    out-logfile -string ("Log File = "+$LogFile)
 
-        # Write everything to our log file and the screen
+    # Write everything to our log file and the screen
 
-        try 
-        {
-            $itemToExport | export-CLIXML -path $LogFile
-        }
-        catch 
-        {
-            throw $_
-        }
-
-        Out-LogFile -string "END OUT-XMLFILE"
-        Out-LogFile -string "********************************************************************************"
+    try 
+    {
+        $itemToExport | export-CLIXML -path $LogFile
     }
+    catch 
+    {
+        throw $_
+    }
+
+    Out-LogFile -string "END OUT-XMLFILE"
+    Out-LogFile -string "********************************************************************************"
+}
+
+function get-CSObject
+{
+    Param
+    (
+        [Parameter(Mandatory = $true)]
+        $dn,
+        [Parameter(Mandatory = $true)]
+        $connectorName
+    )
+    out-logfile -string "Enter get-CSObject"
+
+    $functionCSObject
+
+    try {
+        $functionCSObject = Get-ADSyncCSObject -DistinguishedName $dn -ConnectorName $connectorName
+    }
+    catch {
+        out-logfile -string "Uanble to locate CS Object by DN."
+        out-logfile -string $_
+    }
+    
+    out-logfile -string $functionCSObject
+
+    out-logfile -string "Exit get-CSObject"
+
+    return $functionCSObject
+}
+
 
 #Create the log file.
 
@@ -697,3 +729,12 @@ out-logfile -string "Determine the entra connector name."
 $entraConnectorName = get-Connector -connectorType $entraConnectorType
 
 out-logfile -string $entraConnectorName
+
+out-logfile -string "Capture the CS objects"
+
+if ($adobject -ne $NULL)
+{
+    out-logfile -string "An active directory object was specified."
+
+    $adCSObject = get-CSObject -dn $adobject.distinguishedName -connectorName $ADConnectorName
+}
