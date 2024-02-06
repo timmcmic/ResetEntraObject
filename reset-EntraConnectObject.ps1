@@ -1045,5 +1045,5 @@ else
 
 if ($singleItemData -ne $NULL)
 {
-    Out-XMLFile -itemToExport $singleItemData -itemNameToExport $singleItemXML
+    Out-JSONFile -itemToExport $singleItemData -itemNameToExport $singleItemXML
 }
