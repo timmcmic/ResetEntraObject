@@ -586,16 +586,14 @@ function get-CSObject
     Param
     (
         [Parameter(Mandatory = $true)]
-        $dn,
+        [string]$dn,
         [Parameter(Mandatory = $true)]
-        $connectorName
+        [string]$connectorName
     )
     out-logfile -string "Enter get-CSObject"
 
     out-logfile -string $dn
     out-logfile -string $connectorName
-    $test = $connectorName
-    out-logfile -string $test.substring(1)
 
     $functionCSObject=$NULL
 
