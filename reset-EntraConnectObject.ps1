@@ -549,6 +549,8 @@ if (($CalculateEntraDN -eq $TRUE) -and ($entraDN -eq ""))
 
     out-logfile -string "Calculate the Entra Connector Space DN"
 
+    out-logfile -string $adobject.'ms-ds-ConsistencyGUID'
+
     $entraDN = calculate-EntraDN -adObject $adObject -sourceAnchorAttribute $sourceAnchorAttribute
 
     out-logfile -string $EntraDN
