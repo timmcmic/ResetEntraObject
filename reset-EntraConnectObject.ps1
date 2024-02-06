@@ -494,7 +494,7 @@ function get-Connector
         [Parameter(Mandatory = $true)]
         $connectorType
     )
-    out-logfile -string "Enter get-ADConnector"
+    out-logfile -string "Enter get-Connector"
 
     $functionConnectors = $NULL
     $functionConnectorName
@@ -518,7 +518,7 @@ function get-Connector
         $functionConnectorName - $functionConnectors.name
     }
 
-    out-logfile -string "Exit get-ADConnector"
+    out-logfile -string "Exit get-Connector"
 
     return $functionConnectorName
 }
