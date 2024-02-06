@@ -63,6 +63,8 @@ Param
     [string]$ADObjectMAIL="",
     [Parameter(Mandatory = $false)]
     [string]$ADObjectDN="",
+    [Parameter(Mandatory = $false)]
+    [string]$ADConnectorName="",
     #Define parameteres to locate object in Entra Connector space.
     [Parameter(Mandatory = $false)]
     [string]$EntraDN="",
@@ -88,6 +90,9 @@ Param
 [string]$ADConnectorPowershellFullpath = ""
 [string]$ADSyncDiagnosticsPowershellFullPath = ""
 $adObject = $NULL
+$adConnectorType = "AD"
+$entraConnectorType = "Extensible2"
+$entraConnectorName = ""
 
 
 Function new-LogFile
@@ -432,6 +437,8 @@ function calculate-EntraDN
     $functionBase64String=$NULL
     $functionDN = $NULL
 
+    out-logfile -string "Enter calculate-EntraDN"
+
     if (($sourceAnchorAttribute -eq $anchor0) -or ($sourceAnchorAttribute -eq $anchor1))
     {
         out-logfile -string "Source anchor is objectGUID or ms-ds-ConsistencyGUID"
@@ -475,7 +482,45 @@ function calculate-EntraDN
         out-logfile -string $functionDN
     }
 
+    out-logfile -string "Exit calculate-EntraDN"
+
     return $functionDN
+}
+
+function get-Connector
+{
+    Param
+    (
+        [Parameter(Mandatory = $true)]
+        $connectorType
+    )
+    out-logfile -string "Enter get-ADConnector"
+
+    $functionConnectors = $NULL
+    $functionConnectorName
+
+    try {
+        $functionConnectors = Get-ADSyncConnector -errorAction STOP | where {$_.connectorTypeName -eq $connectorType}
+    }
+    catch {
+        out-logfile -string "Unable to obtain the Entra Connect connectors."
+        out-logfile -string $_
+    }
+    
+    out-logfile -string $functionConnectors
+
+    if ($functionConnectors.count -gt 0)
+    {
+        out-logfile -string "More than one Active Directory connector exists.  Please specify -ADConnectorName with the name from Synchornization Manager -> Connectors"
+    }
+    else 
+    {
+        $functionConnectorName - $functionConnectors.name
+    }
+
+    out-logfile -string "Exit get-ADConnector"
+
+    return $functionConnectorName
 }
 
 #Create the log file.
@@ -577,6 +622,23 @@ if (($CalculateEntraDN -eq $TRUE) -and ($entraDN -eq ""))
     out-logfile -string "Calculate the Entra Connector Space DN"
 
     $entraDN = calculate-EntraDN -adObject $adObject -sourceAnchorAttribute $sourceAnchorAttribute
-    
+
     out-logfile -string $EntraDN
 }
+
+out-logfile -string "Determine if Active Directory connector name specified - if so use otherwise determine - if more than 1 fail."
+
+if ($adConnectorName -eq "")
+{
+    out-logfile -string "No AD Connector specified - determine if more than one or automatic selection."
+
+    $adConnectorName = get-Connector -connectorType $adConnectorType
+
+    out-logfile -string $adConnectorName
+}
+
+out-logfile -string "Determine the entra connector name."
+
+$entraConnectorName = get-Connector -connectorType $entraConnectorType
+
+out-logfile -string $entraConnectorName
