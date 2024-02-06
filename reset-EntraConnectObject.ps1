@@ -638,6 +638,11 @@ if (($entraDN -ne "") -and ($ADObjectDN -ne ""))
 elseif ((($ADObjectDN -ne "") -or ($ADObjectGUID -ne "") -or ($ADObjectMail -ne "")) -and ($entraDN -eq "") -and ($CalculateEntraDN -eq $true))
 {
     out-logfile -string "An Active Directory Identifier was provided / no entraDN was provided / calculate EntraDN is true."
+    out-logfile -string "Active directory lookup is required to calculate the entraDN."
+
+    $useActiveDirectoryLookup = $TRUE
+
+    out-logfile -string ("Use Active Directory Lookup: "+$useActiveDirectoryLookup)
 }
 
 exit
