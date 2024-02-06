@@ -625,6 +625,53 @@ out-logfile -string "***********************************************************
 out-logfile -string "Script paramters:"
 write-functionParameters -keyArray $MyInvocation.MyCommand.Parameters.Keys -parameterArray $PSBoundParameters -variableArray (Get-Variable -Scope Local -ErrorAction Ignore)
 
+#If an Active Directory DN and entra DN were provided - there's no need to calculate valies.
+
+if (($entraDN -ne "") -and ($ADObjectDN -ne ""))
+{
+    out-logfile -string "Both an EntraDN and AD DN were specified - no calculations necessary."
+    $CalculateEntraDN = $false
+    $useActiveDirectoryLookup = $false
+    out-logfile -string ("Calculate EntraDN: "+$CalculateEntraDN)
+    out-logfile -string ("Use Active Directory Lookup: "+$useActiveDirectoryLookup)
+}
+elseif (($entraDN -eq "") -and ($CalculateEntraDN -eq $TRUE))
+{
+    if (($ADObjectDN -eq "") -and ($ADObjectMail -eq "") -and ($ADObjectGUID -eq ""))
+    {
+        out-logfile -string "No entraDN provided and calculate entraDN is true - AD object information required." -isError:$true
+    }
+    else 
+    {
+        out-logfile -string "Active Directory Information provided - enable AD lookup."
+        $useActiveDirectoryLookup = $true
+        out-logfile -string ("Use Active Directory Looksup: "+$useActiveDirectoryLookup)
+    }
+}
+elseif (($entraDN -eq "") -and ($CalculateEntraDN -eq $false))
+{
+    out-logfile -string "No entra ID provided / calculate disabled -> assume purge only AD connector."
+
+    if ($ADObjectDN -ne "")
+    {
+        out-logfile -string "DN Information provided - directory lookup not required."
+        $useActiveDirectoryLookup = $false
+        out-logfile -string ("Use Active Directory Lookup: "+$useActiveDirectoryLookup)
+    }
+    elseif (($ADObjectGUID) -ne "" -or ($ADObjectMail -ne ""))
+    {
+        out-logfile -string "GUID or MAIL provided - AD Lookup Required"
+        $useActiveDirectoryLookup = $true
+        out-logfile -string ("Use Active Directory Lookup: "+$useActiveDirectoryLookup)
+    }
+    else 
+    {
+       out-logfile -string "No entraDN provided or calculated."
+       out-logfile -string "No active directory object provided."
+       out-logfile -string "No work to do..." -isError:$true
+    }
+}
+
 #Determine the AD Connect installation path.
 
 out-logfile -string "Determine the Entra Connect installation root path - required for further script importation."
@@ -644,27 +691,6 @@ out-logfile -string "Importing powershell commands necessary for script executio
 
 import-PowershellCommands -powerShellModule $ADConnectorPowershellFullpath
 import-PowershellCommands -powerShellModule $ADSyncDiagnosticsPowershellFullPath
-
-#Validate the Active Directory Recipient Information
-
-if (($ADObjectGUID -ne "") -or ($ADObjectMail -ne "" ) -or ($ADObjectDN -ne ""))
-{
-    out-logfile -string "An Active Directory identifer was specified."
-    $useActiveDirectoryLookup = $true
-}
-else 
-{
-    out-logfile -string "No Active Directory identifier was specified.  Administrator may be purging only from azure connector space."
-}
-
-#If no AD information is specified check to see if this is an entra only connector space purge.
-
-if (($EntraDN -eq "") -and ($useActiveDirectoryLookup -eq $FALSE))
-{
-    out-logfile -string "No active directory information specified."
-    out-logfile -string "No EntraDN specified."
-    out-logfile -string "No work to be done - exit." -isError:$TRUE
-}
 
 #The following is performed only if the distinguished name is not provided forcing active directory lookup.
 
@@ -691,16 +717,9 @@ if ($useActiveDirectoryLookup -eq $TRUE)
     Out-XMLFile -itemToExport $adobject -itemNameToExport $adObjectXML
 }
 
-#At this point we have determined if an AD Object is involved.  If it is not look to see if entraDN information requires calculation.
-
-if (($CalculateEntraDN -eq $FALSE) -and ($entraDN -eq ""))
-{
-    out-logfile -string "Calculate EntraDN is false and no entraDN provided - exit." -isError:$true
-}
-
 #At this time we can calculate the entraDN if necessary.
 
-if (($CalculateEntraDN -eq $TRUE) -and ($entraDN -eq ""))
+if ($CalculateEntraDN -eq $TRUE)
 {
     out-logfile -string "Determine the source anchor."
 
@@ -708,7 +727,7 @@ if (($CalculateEntraDN -eq $TRUE) -and ($entraDN -eq ""))
 
     out-logfile -string "Calculate the Entra Connector Space DN"
 
-    $entraDN = calculate-EntraDN -adObject $adObject -sourceAnchorAttribute $sourceAnchorAttribute
+    $entraDN = calculate-EntraDN -adObject $adObject -dn $ADObjectDN -sourceAnchorAttribute $sourceAnchorAttribute
 
     out-logfile -string $EntraDN
 }
@@ -737,6 +756,16 @@ if ($adobject -ne $NULL)
     out-logfile -string "An active directory object was specified."
 
     $adCSObject = get-CSObject -dn $adobject.distinguishedName -connectorName $ADConnectorName
+
+    Out-LogFile -string $adCSObject
+
+    out-xmlFile -itemToExport $adCSObject -itemNameToExport $adCSObjectXML
+}
+else 
+{
+    out-logfile -string "An active directory object DN was specified."
+
+    $adCSObject = get-CSObject -dn $ADObjectDN -connectorName $ADConnectorName
 
     Out-LogFile -string $adCSObject
 
