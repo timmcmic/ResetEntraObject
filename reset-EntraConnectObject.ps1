@@ -1047,3 +1047,5 @@ if ($singleItemData -ne $NULL)
 {
     Out-JSONFile -itemToExport $singleItemData -itemNameToExport $singleItemXML
 }
+
+out-logfile -string "Opertaion completed."
