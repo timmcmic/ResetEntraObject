@@ -670,6 +670,20 @@ elseif (($ADObjectDN -ne "") -or ($ADObjectGUID -ne "") -or ($ADObjectMail -ne "
         }
     }
 }
+elseif (($ADObjectDN -eq "") -or ($ADObjectGUID -eq "") -or ($ADObjectMail -eq ""))
+{
+    out-logfile -string "No AD information provided - test for Entra Connector space remove only."
+
+    if ($EntraDN -eq "")
+    {
+        out-logfile -string "EntraDN specified only."
+        $CalculateEntraDN=$false
+    }
+    else 
+    {
+        out-logfile -string "No AD or EntraDN information provided - no work to do." -isError:$true
+    }
+}
 
 
 exit
