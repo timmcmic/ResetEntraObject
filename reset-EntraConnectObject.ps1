@@ -94,6 +94,10 @@ $adConnectorType = "AD"
 $entraConnectorType = "Extensible2"
 $entraConnectorName = ""
 
+$adObjectXML = "adObject.xml"
+$adCSObject = "adCSObject.xml"
+$entraCSObject = "entraCSObject.xml"
+
 
 Function new-LogFile
 {
@@ -601,7 +605,7 @@ if ($useActiveDirectoryLookup -eq $TRUE)
 
     out-logfile -string $adObject
 
-    $adObject | export-cliXML c:\temp\adobject.xml
+    $adobject | Export-Clixml -path $logFolderPath+"\"+$adObjectXML
 }
 
 #At this point we have determined if an AD Object is involved.  If it is not look to see if entraDN information requires calculation.
