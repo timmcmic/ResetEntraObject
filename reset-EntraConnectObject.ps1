@@ -459,6 +459,15 @@ else
     out-logfile -string "No Active Directory identifier was specified.  Administrator may be purging only from azure connector space."
 }
 
+#If no AD information is specified check to see if this is an entra only connector space purge.
+
+if (($EntraDN -eq "") -and ($useActiveDirectoryLookup -eq $FALSE))
+{
+    out-logfile -string "No active directory information specified."
+    out-logfile -string "No EntraDN specified."
+    out-logfile -string "No work to be done - exit." -isError:$TRUE
+}
+
 #The following is performed only if the distinguished name is not provided forcing active directory lookup.
 
 #If use active directory is true perform pre-req checks.
