@@ -368,8 +368,6 @@ function collect-ADObject
         $activeDirectoryCredential
     )
 
-    [string]$globalCatalogPort=":3268"
-    [string]$globalCatalogWithPort=$globalCatalogServer+$globalCatalogPort
     $functionADObject = $NULL
 
     out-logfile -string "Entering collect-ADObject"
@@ -379,7 +377,7 @@ function collect-ADObject
         try
         {
             out-logfile -string "Finding AD Object by DN."
-            $functionADObject=get-adobject -identity $ADObjectDN -Server $globalCatalogWithPort -credential $activeDirectoryCredential -Properties * -errorAction STOP
+            $functionADObject=get-adobject -identity $ADObjectDN -Server $globalCatalogServer -credential $activeDirectoryCredential -Properties * -errorAction STOP
         }
         catch {
             out-logfile -string "ADObjectDN specified but object not found by DN."
@@ -391,7 +389,7 @@ function collect-ADObject
         try
         {
             out-logfile -string "Finding AD Object by GUID"
-            $functionADObject=Get-ADObject -filter "objectGUID -eq `"$ADObjectGUID`"" -Server $globalCatalogWithPort -credential $activeDirectoryCredential -Properties * -errorAction STOP
+            $functionADObject=Get-ADObject -filter "objectGUID -eq `"$ADObjectGUID`"" -Server $globalCatalogServer -credential $activeDirectoryCredential -Properties * -errorAction STOP
         }
         catch {
             out-logfile -string "ADObjectGUID specified but object not found by DN."
@@ -403,7 +401,7 @@ function collect-ADObject
         try
         {
             out-logfile -string "Finding AD Object by Mail."
-            $functionADObject=Get-ADObject -filter "mail -eq `"$ADObjectMail`"" -Server $globalCatalogWithPort -credential $activeDirectoryCredential -Properties * -errorAction STOP
+            $functionADObject=Get-ADObject -filter "mail -eq `"$ADObjectMail`"" -Server $globalCatalogServer -credential $activeDirectoryCredential -Properties * -errorAction STOP
         }
         catch {
             out-logfile -string "ADObjectMAIL specified but object not found by DN."
@@ -431,11 +429,6 @@ function calculate-EntraDN
     $anchor0 = "objectGUID"
     $anchor1 = "ms-ds-ConsistencyGuid"
     $functionGUID = $NULL
-    
-    out-logfile -string $adobject.'ms-ds-consistencyguid'
-    out-logfile -string $adobject.distinguishedName
-    out-logfile -string $adObject.mail
-    out-logfile -string $adobject.objectGUID
 
     if (($sourceAnchorAttribute -eq $anchor0) -or ($sourceAnchorAttribute -eq $anchor1))
     {
