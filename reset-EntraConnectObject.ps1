@@ -383,7 +383,7 @@ function collect-ADObject
     {
         try
         {
-            $functionADObject=get-adobject -filter "objectGuid -eq '$ADObjectGUID'" -Server $globalCatalogWithPort -credential $activeDirectoryCredential -Properties * -errorAction STOP
+            $functionADObject=Get-ADObject -filter "objectGUID -eq `"$ADObjectGUID`"" -Server $globalCatalogWithPort -credential $activeDirectoryCredential -Properties * -errorAction STOP
         }
         catch {
             out-logfile -string "ADObjectDN specified but object not found by DN."
@@ -394,7 +394,7 @@ function collect-ADObject
     {
         try
         {
-            $functionADObject=get-adobject -filter "mail -eq '$ADObjectMAIL'" -Server $globalCatalogWithPort -credential $activeDirectoryCredential -Properties * -errorAction STOP
+            $functionADObject=Get-ADObject -filter "mail -eq `"$ADObjectMail`"" -Server $globalCatalogWithPort -credential $activeDirectoryCredential -Properties * -errorAction STOP
         }
         catch {
             out-logfile -string "ADObjectDN specified but object not found by DN."
