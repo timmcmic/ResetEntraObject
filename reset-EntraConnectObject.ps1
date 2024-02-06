@@ -740,7 +740,7 @@ if ($adobject -ne $NULL)
 
     Out-LogFile -string $adCSObject
 
-    out-xmlFile -itemNameToExport $adCSObject -itemNameToExport $adCSObjectXML
+    out-xmlFile -itemToExport $adCSObject -itemNameToExport $adCSObjectXML
 }
 
 if ($EntraDN -ne "")
