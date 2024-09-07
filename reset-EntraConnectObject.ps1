@@ -17,7 +17,7 @@
 
 <#PSScriptInfo
 
-.VERSION 2.2
+.VERSION 2.2.1
 
 .GUID f9cfe327-869f-410e-90e3-7286c94c31fd
 
@@ -308,10 +308,31 @@ function validate-EntraConnectServer
 {
     out-logfile -string "Entering validate-EntraConnectServer"
 
+    out-logfile -string "Microsoft Azure AD Connect synchronization services for legacy versions..."
+
     $functionApplicationDisplayName = "Microsoft Azure AD Connect synchronization services"
     $functionInstalledPrograms = Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*
     
     $functionEntraConnect = $functionInstalledPrograms | where {$_.displayName -eq $functionApplicationDisplayName}
+
+    if ($functionEntraConnect.displayName -ne $functionApplicationDisplayName)
+    {
+        out-logfile -string "Legacy version is not present."
+
+        $functionApplicationDisplayName = "Microsoft Entra Connect synchronization services"
+        $functionInstalledPrograms = Get-ItemProperty HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*
+    
+        $functionEntraConnect = $functionInstalledPrograms | where {$_.displayName -eq $functionApplicationDisplayName}
+    }
+    else 
+    {
+        out-logfile -string "Legacy version present did not test for Entra name."
+    }
+
+    if ($functionEntraConnect.displayName -ne $functionApplicationDisplayName)
+    {
+        out-logfile -string "Uninstall for Entra Connect not located - application path cannot be found." -isError:$true
+    }
 
     out-logfile -string $functionEntraConnect
 
