@@ -931,6 +931,9 @@ write-functionParameters -keyArray $MyInvocation.MyCommand.Parameters.Keys -para
 out-logfile -string "Determining state of the remote server administration tools for Active Directory."
 test-RSATADDS
 
+out-logfile -string "Determine that a sync operation is not currently running."
+check-EntraSync
+
 if (($entraDN -ne "") -and ($ADObjectDN -ne ""))
 {
     out-logfile -string "Both an EntraDN and AD DN were specified - no calculations necessary."
