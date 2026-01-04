@@ -211,7 +211,6 @@ Function Out-LogFile
         exit
     }
 }
-
 function test-RSATADDS
 {
         out-logfile -string "Entering test-RSATADDS"
@@ -903,6 +902,9 @@ out-logfile -string "Script paramters:"
 write-functionParameters -keyArray $MyInvocation.MyCommand.Parameters.Keys -parameterArray $PSBoundParameters -variableArray (Get-Variable -Scope Local -ErrorAction Ignore)
 
 #If an Active Directory DN and entra DN were provided - there's no need to calculate valies.
+
+out-logfile -string "Determining state of the remote server administration tools for Active Directory."
+test-RSATADDS
 
 if (($entraDN -ne "") -and ($ADObjectDN -ne ""))
 {
