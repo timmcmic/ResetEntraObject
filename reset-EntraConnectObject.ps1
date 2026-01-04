@@ -213,38 +213,40 @@ Function Out-LogFile
 }
 function test-RSATADDS
 {
-        out-logfile -string "Entering test-RSATADDS"
+    out-logfile -string "Entering test-RSATADDS"
 
-        $feature = get-WindowsFeature "RSAT-ADDS"
+    $feature = get-WindowsFeature "RSAT-ADDS"
 
-        out-logfile -string ("RSAT-ADDS install state: "+$feature.installState)
+    out-logfile -string ("RSAT-ADDS install state: "+$feature.installState)
 
-        if ($feature.installState -ne "Installed")
-        {
-            out-logfile -string "Installing the remote server administration tools for Active Directory."
+    if ($feature.installState -ne "Installed")
+    {
+        out-logfile -string "Installing the remote server administration tools for Active Directory."
 
-            try {
-                install-WindowsFeature "RSAT-ADDS" -errorAction STOP
+        try {
+            install-WindowsFeature "RSAT-ADDS" -errorAction STOP
 
-                out-logfile -string "Remote server administration tools for Active Directory installed successfully."
+            out-logfile -string "Remote server administration tools for Active Directory installed successfully."
 
-                $feature = get-WindowsFeature "RSAT-ADDS"
+            $feature = get-WindowsFeature "RSAT-ADDS"
 
-                out-logfile -string ("RSAT-ADDS install state: "+$feature.installState)
-            }
-            catch {
-                out-logfile -string "Unable to install the remote server administration tools for Active Directory."
-                out-logfile -string $_ -isError:$TRUE
-            }
+            out-logfile -string ("RSAT-ADDS install state: "+$feature.installState)
         }
-        elseif ($feature.installState -eq "Installed")
-        {
-            out-logfile -string "Remote administration tools for Active Directory already installed - proceed."
+        catch {
+            out-logfile -string "Unable to install the remote server administration tools for Active Directory."
+            out-logfile -string $_ -isError:$TRUE
         }
-        else 
-        {
-            out-logfile -string "Error determining the installation state of the remote administration tools for Active Directory" -isError:$TRUE
-        }
+    }
+    elseif ($feature.installState -eq "Installed")
+    {
+        out-logfile -string "Remote administration tools for Active Directory already installed - proceed."
+    }
+    else 
+    {
+        out-logfile -string "Error determining the installation state of the remote administration tools for Active Directory" -isError:$TRUE
+    }
+    
+    out-logfile -string "End test-RSATADDS"
 }
 
 Function write-FunctionParameters
@@ -762,6 +764,25 @@ Function resume-EntraSync
     }until ($retry -eq $FALSE)
 
     out-logfile -string "End resume-EntraSync"
+}
+
+Function check-EntraSync
+{
+    out-logfile -string "Enter check-EntraSync"
+
+    if ($output = get-AdSyncConnectorRunStatus)
+    {
+        out-logfile -string ("Connector Name: "+$output.connectorName)
+        out-logfile -string ("Connector Status: "+$output.runState)
+        out-logfile -string "A connector in Entra Connect is busy - this indicates a sycn cycle is running."
+        out-logfile -string "Retry when the current sync operation has completed." -isError:$true
+    }
+    else 
+    {
+        out-logfile -string "Sync is not in progress at time of execution - proceed."
+    }
+
+    out-logfile -string "End check-EntraSync"
 }
 
 Function delete-CSObject
