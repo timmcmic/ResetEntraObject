@@ -217,7 +217,7 @@ function test-RSATADDS
 
         $feature = get-WindowsFeature RSAT-ADDS
 
-        out-logfile -string "RSAT-ADDS install state: "+$feature.installState
+        out-logfile -string ()"RSAT-ADDS install state: "+$feature.installState)
 
         if ($feature.installState -eq "Available")
         {
