@@ -17,7 +17,7 @@
 
 <#PSScriptInfo
 
-.VERSION 2.2.9
+.VERSION 2.2.10
 
 .GUID f9cfe327-869f-410e-90e3-7286c94c31fd
 
@@ -599,6 +599,29 @@ function get-Connector
     return $functionConnectorName
 }
 
+function validateConnector
+{
+    Param
+    (
+        [Parameter(Mandatory = $true)]
+        $connectorName
+    )
+    out-logfile -string "Enter validate-Connector"
+
+    if (get-ADSyncConnector -name $connectorName)
+    {
+        out-logfile -string "Connector located successfully."
+    }
+    else 
+    {
+        out-logfile -string ("Unable to locate the AD Connector with name "+$connectorName) -isError:$true
+    }
+
+    out-logfile -string "Exit get-Connector"
+
+    return $functionConnectorName
+}
+
 Function Out-XMLFile
     {
     [cmdletbinding()]
@@ -1073,12 +1096,11 @@ if ($adConnectorName -eq "")
 
     out-logfile -string $adConnectorName
 }
-elseif (($adconnectorName -ne "" -and ($ADObjectDN -eq "" -or $EntraDN -eq "")) -or ($adconnectorName -ne "" -and $ADObjectDN -ne "" -and $CalculateEntraDN -eq $TRUE))
+else 
 {
-    out-logfile -string "When multiple ad connectors exist and and an ad connector name is specified -"
-    out-logfile -string "The command must be run with ADConnectorName, ADObjectDN and EntraDN <or>"
-    out-logfile -string "The command must be run with ADConnectorName, ADObjectDN, and CalculateEntraDN:$FALSE"
-    out-logfile -string "See option 5 at https://timmcmic.wordpress.com/2024/02/07/entra-connect-and-single-object-deletion/" -isError:$TRUE
+    out-logfile -string "Validating that the ad connector specified exists."
+
+    validate-Connector -connectorName $ADConnectorName
 }
 
 out-logfile -string "Determine the entra connector name."
