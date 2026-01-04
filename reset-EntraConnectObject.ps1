@@ -102,7 +102,7 @@ $entraCSObjectXML = "entraCSObject"
 $singleItemData = $NULL
 $singleItemXML = "singleItemXML"
 
-$logFileName = (Get-Date -Format FileDateTime)
+$logFileName = "ResetEntraObject"+(Get-Date -Format FileDateTime)
 
 $adCSObject = $NULL
 $entraCSObject = $NULL
