@@ -212,6 +212,38 @@ Function Out-LogFile
     }
 }
 
+function test-RSATADDS
+{
+        out-logfile -string "Entering test-RSATADDS"
+
+        $feature = get-WindowsFeature RSAT-ADDS
+
+        out-logfile -string "RSAT-ADDS install state: "+$feature.installState
+
+        if ($feature.installState -eq "Available")
+        {
+            out-logfile -string "Installing the remote server administration tools for Active Directory."
+
+            try {
+                install-WindowsFeature "RSAT-ADDS" -errorAction start-sleepProgess
+
+                out-logfile -string "Remote server administration tools for Active Directory installed successfully."
+            }
+            catch {
+                out-logfile -string "Unable to install the remote server administration tools for Active Directory."
+                out-logfile -string $_ -isError:$TRUE
+            }
+        }
+        elseif ($feature.installState -eq "Installed")
+        {
+            out-logfile -string "Remote administration tools for Active Directory already installed - proceed."
+        }
+        else 
+        {
+            out-logfile -string "Error determining the installation state of the remote administration tools for Active Directory" -isError:$TRUE
+        }
+}
+
 Function write-FunctionParameters
 {
     [cmdletbinding()]
