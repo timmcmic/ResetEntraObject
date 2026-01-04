@@ -17,7 +17,7 @@
 
 <#PSScriptInfo
 
-.VERSION 2.2.10
+.VERSION 2.2.13
 
 .GUID f9cfe327-869f-410e-90e3-7286c94c31fd
 
@@ -599,7 +599,7 @@ function get-Connector
     return $functionConnectorName
 }
 
-function validateConnector
+function validate-Connector
 {
     Param
     (
@@ -608,18 +608,16 @@ function validateConnector
     )
     out-logfile -string "Enter validate-Connector"
 
-    if (get-ADSyncConnector -name $connectorName)
-    {
-        out-logfile -string "Connector located successfully."
+    try {
+        get-ADSyncConnector -name $connectorName -errorAction STOP
+        out-logfile -string "Connector located successfully by name."
     }
-    else 
-    {
-        out-logfile -string ("Unable to locate the AD Connector with name "+$connectorName) -isError:$true
+    catch {
+        out-logfile -string "Unable to locate the specified AD Connector by name."
+        out-logfile -string $_ -isError:$TRUE
     }
 
     out-logfile -string "Exit get-Connector"
-
-    return $functionConnectorName
 }
 
 Function Out-XMLFile
