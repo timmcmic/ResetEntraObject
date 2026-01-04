@@ -17,7 +17,7 @@
 
 <#PSScriptInfo
 
-.VERSION 2.2.5
+.VERSION 2.2.6
 
 .GUID f9cfe327-869f-410e-90e3-7286c94c31fd
 
@@ -215,11 +215,11 @@ function test-RSATADDS
 {
         out-logfile -string "Entering test-RSATADDS"
 
-        $feature = get-WindowsFeature RSAT-ADDS
+        $feature = get-WindowsFeature "RSAT-ADDS"
 
-        out-logfile -string ()"RSAT-ADDS install state: "+$feature.installState)
+        out-logfile -string ("RSAT-ADDS install state: "+$feature.installState)
 
-        if ($feature.installState -eq "Available")
+        if ($feature.installState -ne "Installed")
         {
             out-logfile -string "Installing the remote server administration tools for Active Directory."
 
@@ -227,6 +227,10 @@ function test-RSATADDS
                 install-WindowsFeature "RSAT-ADDS" -errorAction STOP
 
                 out-logfile -string "Remote server administration tools for Active Directory installed successfully."
+
+                $feature = get-WindowsFeature "RSAT-ADDS"
+
+                out-logfile -string ("RSAT-ADDS install state: "+$feature.installState)
             }
             catch {
                 out-logfile -string "Unable to install the remote server administration tools for Active Directory."
