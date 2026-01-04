@@ -17,7 +17,7 @@
 
 <#PSScriptInfo
 
-.VERSION 2.2.6
+.VERSION 2.2.9
 
 .GUID f9cfe327-869f-410e-90e3-7286c94c31fd
 
@@ -1073,12 +1073,12 @@ if ($adConnectorName -eq "")
 
     out-logfile -string $adConnectorName
 }
-elseif (($adconnectorName -ne "" -and $ADObjectDN -ne "" -and $EntraDN -ne "") -or ($adconnectorName -ne "" -and $ADObjectDN -ne "" -and $CalculateEntraDN -eq $TRUE)
+elseif (($adconnectorName -ne "" -and ($ADObjectDN -eq "" -or $EntraDN -eq "")) -or ($adconnectorName -ne "" -and $ADObjectDN -ne "" -and $CalculateEntraDN -eq $TRUE))
 {
     out-logfile -string "When multiple ad connectors exist and and an ad connector name is specified -"
     out-logfile -string "The command must be run with ADConnectorName, ADObjectDN and EntraDN <or>"
     out-logfile -string "The command must be run with ADConnectorName, ADObjectDN, and CalculateEntraDN:$FALSE"
-    out-logfile -string "See option 5 at https://timmcmic.wordpress.com/2024/02/07/entra-connect-and-single-object-deletion/"
+    out-logfile -string "See option 5 at https://timmcmic.wordpress.com/2024/02/07/entra-connect-and-single-object-deletion/" -isError:$TRUE
 }
 
 out-logfile -string "Determine the entra connector name."
