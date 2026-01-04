@@ -224,7 +224,7 @@ function test-RSATADDS
             out-logfile -string "Installing the remote server administration tools for Active Directory."
 
             try {
-                install-WindowsFeature "RSAT-ADDS" -errorAction start-sleepProgess
+                install-WindowsFeature "RSAT-ADDS" -errorAction STOP
 
                 out-logfile -string "Remote server administration tools for Active Directory installed successfully."
             }
