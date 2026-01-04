@@ -1073,6 +1073,13 @@ if ($adConnectorName -eq "")
 
     out-logfile -string $adConnectorName
 }
+elseif (($adconnectorName -ne "" -and $ADObjectDN -ne "" -and $EntraDN -ne "") -or ($adconnectorName -ne "" -and $ADObjectDN -ne "" -and $CalculateEntraDN -eq $TRUE)
+{
+    out-logfile -string "When multiple ad connectors exist and and an ad connector name is specified -"
+    out-logfile -string "The command must be run with ADConnectorName, ADObjectDN and EntraDN <or>"
+    out-logfile -string "The command must be run with ADConnectorName, ADObjectDN, and CalculateEntraDN:$FALSE"
+    out-logfile -string "See option 5 at https://timmcmic.wordpress.com/2024/02/07/entra-connect-and-single-object-deletion/"
+}
 
 out-logfile -string "Determine the entra connector name."
 
