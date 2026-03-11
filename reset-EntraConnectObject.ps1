@@ -17,7 +17,7 @@
 
 <#PSScriptInfo
 
-.VERSION 2.2.13
+.VERSION 2.2.14
 
 .GUID f9cfe327-869f-410e-90e3-7286c94c31fd
 
@@ -79,7 +79,9 @@ Param
     [Parameter(Mandatory = $true)]
     [string]$logFolderPath=$NULL,
     [Parameter(Mandatory = $false)]
-    [boolean]$skipSingleItemSync=$false
+    [boolean]$skipSingleItemSync=$false,
+    [Parameter(Mandatory = $false)]
+    [boolean]$bulkOperation=$false
 )
 
 #Define the script parameters.
@@ -1149,7 +1151,14 @@ if ($EntraDN -ne "")
 
 out-logfile -string "Suspend Entra Connect synchornization while object removal and sync is in progress."
 
-suspend-EntraSync
+if ($bulkOperation -eq $FALSE)
+{
+    suspend-EntraSync
+}
+else 
+{
+    out-logfile -string "Skipping syspend operation - removal part of bulk operation."
+}
 
 out-logfile -string "Suspend Entra Connect synchronization successful - proceed with connector space object deletion."
 
@@ -1188,6 +1197,14 @@ if ($singleItemData -ne $NULL)
 
 out-logfile -string "Re-enable the sync cycle."
 
-resume-EntraSync
+if ($bulkOperation -eq $false)
+{
+    resume-EntraSync
+}
+else 
+{
+    out-logfile -string "Resume part of bulk operation - skip."
+}
+
 
 out-logfile -string "Opertaion completed."
