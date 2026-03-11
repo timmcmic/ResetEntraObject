@@ -207,10 +207,6 @@ Function Out-LogFile
         #This is how we end up logging an error then looping back around.
 
         write-error $logString
-
-        #Now if we're not in a do while we end up here -> go ahead and create the status file this was not a retryable operation and is a hard failure.
-
-        exit
     }
 }
 function test-RSATADDS
