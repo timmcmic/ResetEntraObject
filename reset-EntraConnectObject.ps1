@@ -17,7 +17,7 @@
 
 <#PSScriptInfo
 
-.VERSION 2.2.15
+.VERSION 2.2.16
 
 .GUID f9cfe327-869f-410e-90e3-7286c94c31fd
 
@@ -57,7 +57,7 @@
 Param
 (
     [CmdletBinding()]
-    
+
     #Define paramters to locate object in Active Directory
     [Parameter(Mandatory = $false)]
     [string]$ADObjectGUID="",
