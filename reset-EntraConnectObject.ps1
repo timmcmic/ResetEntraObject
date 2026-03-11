@@ -56,6 +56,8 @@
 #> 
 Param
 (
+    [CmdletBinding()]
+    
     #Define paramters to locate object in Active Directory
     [Parameter(Mandatory = $false)]
     [string]$ADObjectGUID="",
